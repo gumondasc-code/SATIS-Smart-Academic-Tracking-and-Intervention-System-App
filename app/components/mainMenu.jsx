@@ -108,7 +108,7 @@ function Mainmenu() {
                 style={styles.drawerItem}
                 onPress={() => {
                   setDrawerOpen(false);
-                  router.push('/Screens/Aboutscreen');
+                  router.push('/Screens/about');
                 }}
               >
                 <Ionicons name="information-circle-outline" size={24} color="#1f2937" />
@@ -144,7 +144,7 @@ function Mainmenu() {
   )
 }
 
-export default Mainmenu
+export default Mainmenu;
 
 const styles = StyleSheet.create({
   header: {

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import Mainmenu from '../mainMenu';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import Mainmenu from '../components/mainMenu';
 
 const AcademicTracker = () => {
   const router = useRouter();
@@ -48,11 +48,10 @@ const AcademicTracker = () => {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.mainMenuWrapper}>
+      <View style={styles.MainMenuWrapper}>
       <Mainmenu />
       </View>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.title}>My Subjects</Text>
@@ -86,7 +85,7 @@ const AcademicTracker = () => {
             <Text style={styles.statLabel}>Passing Subjects</Text>
             <Text style={[styles.statValue, { color: '#9C27B0' }]}>{stats.passed} / {stats.total}</Text>
             </View>
-        </View>
+git         </View>
 
         {/* Filters */}
         <View style={styles.filterContainer}>
@@ -167,25 +166,21 @@ const AcademicTracker = () => {
 
 const styles = StyleSheet.create({
   safe: {
-  flex: 1,
-  backgroundColor: '#fff7fb', // Same pink background
-},
-mainMenuWrapper: {
-  paddingHorizontal: 16,
-  paddingTop: 8,
-  backgroundColor: '#fff7fb',
-},
-scrollView: {
-  flex: 1,
-},
-scrollContent: {
-  padding: 16,          // or paddingHorizontal: 16
-  paddingTop: 8,
-  paddingBottom: 100,   // Space for bottom navigation
-},
+    flex: 1,
+    backgroundColor: '#FFE4F0',
+  },
+  MainMenuWrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    backgroundColor: '#FFE4F0',
+  },
+  scrollView: {
+    flex: 1,
+  },
   header: {
     padding: 20,
     paddingTop: 10,
+    backgroundColor: '#black',
   },
   title: {
     fontSize: 28,
