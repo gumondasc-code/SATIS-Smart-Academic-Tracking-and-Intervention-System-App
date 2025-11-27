@@ -1,25 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet
-} from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, ChevronDown, ChevronUp, FileDown } from 'lucide-react-native';
-import { LineChart } from 'react-native-gifted-charts';
-import * as Print from 'expo-print';
-import { shareAsync } from 'expo-sharing';
+  StyleSheet,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ChevronLeft,
+  ChevronDown,
+  ChevronUp,
+  FileDown,
+} from "lucide-react-native";
+import { LineChart } from "react-native-gifted-charts";
+import * as Print from "expo-print";
+import { shareAsync } from "expo-sharing";
 
 const SubjectDetail = () => {
   const router = useRouter();
-  const params = useLocalSearchParams(); 
+  const params = useLocalSearchParams();
 
-  const subjectName = params.subjectName ?? 'Unknown Subject';
-  const teacher = params.teacher ?? 'Unknown Teacher';
-  const grade = params.grade ?? 'N/A';
+  const subjectName = params.subjectName ?? "Unknown Subject";
+  const teacher = params.teacher ?? "Unknown Teacher";
+  const grade = params.grade ?? "N/A";
 
   const [expandedSections, setExpandedSections] = useState({
     writtenWorks: true,
@@ -28,9 +33,9 @@ const SubjectDetail = () => {
   });
 
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -38,39 +43,74 @@ const SubjectDetail = () => {
   const quarterData = {
     q1: {
       writtenWorks: [
-        { title: 'Quiz', description: 'Speech Styles and Context', score: 18, total: 20, status: 'Passed' },
-        { title: 'Quiz', description: 'The Ethics of Public Speaking', score: 15, total: 20, status: 'Passed' },
-        { title: 'Quiz', description: 'Models and Barriers', score: 12, total: 20, status: 'Passed' },
+        {
+          title: "Quiz",
+          description: "Speech Styles and Context",
+          score: 18,
+          total: 20,
+          status: "Passed",
+        },
+        {
+          title: "Quiz",
+          description: "The Ethics of Public Speaking",
+          score: 15,
+          total: 20,
+          status: "Passed",
+        },
+        {
+          title: "Quiz",
+          description: "Models and Barriers",
+          score: 12,
+          total: 20,
+          status: "Passed",
+        },
       ],
       performanceTasks: [
-        { title: 'Presentation', description: 'Group Research Proposal', score: 45, total: 50, status: 'Passed' },
-        { title: 'Portfolio', description: 'Data Collection', score: 38, total: 40, status: 'Passed' },
+        {
+          title: "Presentation",
+          description: "Group Research Proposal",
+          score: 45,
+          total: 50,
+          status: "Passed",
+        },
+        {
+          title: "Portfolio",
+          description: "Data Collection",
+          score: 38,
+          total: 40,
+          status: "Passed",
+        },
       ],
-      quarterlyExam: { score: 85, total: 100, status: 'Passed' }
-    }
+      quarterlyExam: { score: 85, total: 100, status: "Passed" },
+    },
   };
 
   const teacherFeedback = [
-    { quarter: 'Q1', feedback: 'Excellent in class participations. Keep up the Good Work!' },
-    { quarter: 'Q2', feedback: 'You show good understanding. Double-check your work for simple mistakes.' },
-    { quarter: 'Q3', feedback: 'Excellent job meeting all deadlines.' },
-    { quarter: 'Q4', feedback: 'Very good progress this year.' },
+    {
+      quarter: "Q1",
+      feedback: "Excellent in class participations. Keep up the Good Work!",
+    },
+    {
+      quarter: "Q2",
+      feedback:
+        "You show good understanding. Double-check your work for simple mistakes.",
+    },
   ];
 
   const gradeData = [
-    { value: 88, label: 'Q1' },
-    { value: 91, label: 'Q2' },
-    { value: 93, label: 'Q3' },
-    { value: 92, label: 'Q4' },
+    { value: 88, label: "Q1" },
+    { value: 91, label: "Q2" },
+    { value: 93, label: "Q3" },
+    { value: 92, label: "Q4" },
   ];
 
   const getStatusColor = (status) => {
-    return status === 'Passed' ? '#10b981' : '#ef4444';
+    return status === "Passed" ? "#10b981" : "#ef4444";
   };
 
   const generatePDF = async () => {
-  try {
-    const html = `
+    try {
+      const html = `
       <html>
         <head>
           <style>
@@ -91,14 +131,31 @@ const SubjectDetail = () => {
 
           <h2>1st Quarter Performance</h2>
           <ul>
-            ${quarterData.q1.writtenWorks.map(w => `<li><strong>${w.title}</strong>: ${w.score}/${w.total} – ${w.description}</li>`).join('')}
-            ${quarterData.q1.performanceTasks.map(t => `<li><strong>${t.title}</strong>: ${t.score}/${t.total} – ${t.description}</li>`).join('')}
-            <li><strong>Quarterly Exam:</strong> ${quarterData.q1.quarterlyExam.score}/100</li>
+            ${quarterData.q1.writtenWorks
+              .map(
+                (w) =>
+                  `<li><strong>${w.title}</strong>: ${w.score}/${w.total} – ${w.description}</li>`
+              )
+              .join("")}
+            ${quarterData.q1.performanceTasks
+              .map(
+                (t) =>
+                  `<li><strong>${t.title}</strong>: ${t.score}/${t.total} – ${t.description}</li>`
+              )
+              .join("")}
+            <li><strong>Quarterly Exam:</strong> ${
+              quarterData.q1.quarterlyExam.score
+            }/100</li>
           </ul>
 
           <h2>Teacher Feedback</h2>
           <ul class="feedback">
-            ${teacherFeedback.map(fb => `<li><strong>${fb.quarter}: </strong>${fb.feedback}</li>`).join('')}
+            ${teacherFeedback
+              .map(
+                (fb) =>
+                  `<li><strong>${fb.quarter}: </strong>${fb.feedback}</li>`
+              )
+              .join("")}
           </ul>
 
           <p style="text-align:center; color:#999; margin-top:50px;">
@@ -108,19 +165,24 @@ const SubjectDetail = () => {
       </html>
     `;
 
-    const { uri } = await Print.printToFileAsync({ html });
-    await shareAsync(uri, { UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
-
-  } catch (error) {
-    Alert.alert('Error', 'Could not generate PDF');
-    console.log(error);
-  }
-};
+      const { uri } = await Print.printToFileAsync({ html });
+      await shareAsync(uri, {
+        UTI: "com.adobe.pdf",
+        mimeType: "application/pdf",
+      });
+    } catch (error) {
+      Alert.alert("Error", "Could not generate PDF");
+      console.log(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
           <ChevronLeft size={24} color="#1A1A1A" />
         </TouchableOpacity>
       </View>
@@ -152,7 +214,9 @@ const SubjectDetail = () => {
 
         {/* Quarter Tabs */}
         <View style={styles.quarterTabs}>
-          <TouchableOpacity style={[styles.quarterTab, styles.quarterTabActive]}>
+          <TouchableOpacity
+            style={[styles.quarterTab, styles.quarterTabActive]}
+          >
             <View style={styles.quarterDot} />
             <Text style={styles.quarterTabText}>1st Quarter</Text>
           </TouchableOpacity>
@@ -160,15 +224,16 @@ const SubjectDetail = () => {
 
         {/* Written Works Section */}
         <View style={styles.section}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.sectionHeader}
-            onPress={() => toggleSection('writtenWorks')}
+            onPress={() => toggleSection("writtenWorks")}
           >
             <Text style={styles.sectionTitle}>Written Works</Text>
-            {expandedSections.writtenWorks ? 
-              <ChevronUp size={20} color="#666" /> : 
+            {expandedSections.writtenWorks ? (
+              <ChevronUp size={20} color="#666" />
+            ) : (
               <ChevronDown size={20} color="#666" />
-            }
+            )}
           </TouchableOpacity>
 
           {expandedSections.writtenWorks && (
@@ -177,10 +242,17 @@ const SubjectDetail = () => {
                 <View key={index} style={styles.workItem}>
                   <View style={styles.workHeader}>
                     <Text style={styles.workTitle}>{work.title}</Text>
-                    <Text style={styles.workScore}>{work.score}/{work.total}</Text>
+                    <Text style={styles.workScore}>
+                      {work.score}/{work.total}
+                    </Text>
                   </View>
                   <Text style={styles.workDescription}>{work.description}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(work.status) }]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: getStatusColor(work.status) },
+                    ]}
+                  >
                     <Text style={styles.statusText}>{work.status}</Text>
                   </View>
                 </View>
@@ -191,15 +263,16 @@ const SubjectDetail = () => {
 
         {/* Performance Tasks Section */}
         <View style={styles.section}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.sectionHeader}
-            onPress={() => toggleSection('performanceTasks')}
+            onPress={() => toggleSection("performanceTasks")}
           >
             <Text style={styles.sectionTitle}>Performance Tasks</Text>
-            {expandedSections.performanceTasks ? 
-              <ChevronUp size={20} color="#666" /> : 
+            {expandedSections.performanceTasks ? (
+              <ChevronUp size={20} color="#666" />
+            ) : (
               <ChevronDown size={20} color="#666" />
-            }
+            )}
           </TouchableOpacity>
 
           {expandedSections.performanceTasks && (
@@ -208,10 +281,17 @@ const SubjectDetail = () => {
                 <View key={index} style={styles.workItem}>
                   <View style={styles.workHeader}>
                     <Text style={styles.workTitle}>{task.title}</Text>
-                    <Text style={styles.workScore}>{task.score}/{task.total}</Text>
+                    <Text style={styles.workScore}>
+                      {task.score}/{task.total}
+                    </Text>
                   </View>
                   <Text style={styles.workDescription}>{task.description}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(task.status) }]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      { backgroundColor: getStatusColor(task.status) },
+                    ]}
+                  >
                     <Text style={styles.statusText}>{task.status}</Text>
                   </View>
                 </View>
@@ -222,23 +302,38 @@ const SubjectDetail = () => {
 
         {/* Quarterly Exam Section */}
         <View style={styles.section}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.sectionHeader}
-            onPress={() => toggleSection('quarterlyExam')}
+            onPress={() => toggleSection("quarterlyExam")}
           >
             <Text style={styles.sectionTitle}>Quarterly Exam</Text>
-            {expandedSections.quarterlyExam ? 
-              <ChevronUp size={20} color="#666" /> : 
+            {expandedSections.quarterlyExam ? (
+              <ChevronUp size={20} color="#666" />
+            ) : (
               <ChevronDown size={20} color="#666" />
-            }
+            )}
           </TouchableOpacity>
 
           {expandedSections.quarterlyExam && (
             <View style={styles.sectionContent}>
               <View style={styles.examCard}>
-                <Text style={styles.examScore}>{quarterData.q1.quarterlyExam.score}/{quarterData.q1.quarterlyExam.total}</Text>
-                <View style={[styles.statusBadge, { backgroundColor: getStatusColor(quarterData.q1.quarterlyExam.status) }]}>
-                  <Text style={styles.statusText}>{quarterData.q1.quarterlyExam.status}</Text>
+                <Text style={styles.examScore}>
+                  {quarterData.q1.quarterlyExam.score}/
+                  {quarterData.q1.quarterlyExam.total}
+                </Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    {
+                      backgroundColor: getStatusColor(
+                        quarterData.q1.quarterlyExam.status
+                      ),
+                    },
+                  ]}
+                >
+                  <Text style={styles.statusText}>
+                    {quarterData.q1.quarterlyExam.status}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -255,7 +350,8 @@ const SubjectDetail = () => {
             <Text style={styles.placeholderEmoji}>📋</Text>
           </View>
           <Text style={styles.placeholderText}>
-            Your 2nd Quarter hasn't started yet. Progress will appear here once the new grading period begins.
+            Your 2nd Quarter hasn't started yet. Progress will appear here once
+            the new grading period begins.
           </Text>
         </View>
 
@@ -278,141 +374,127 @@ const SubjectDetail = () => {
         {/* Suggested Interventions */}
         <View style={styles.interventionSection}>
           <View style={styles.interventionHeader}>
-            <Text style={styles.interventionTitle}>➕ Suggested Interventions</Text>
+            <Text style={styles.interventionTitle}>
+              Suggested Interventions
+            </Text>
           </View>
           <View style={styles.interventionPlaceholder}>
             <View style={styles.interventionIconBox}>
               <Text style={styles.interventionIcon}>✅</Text>
             </View>
             <Text style={styles.interventionText}>
-              There's nothing to intervene keep up the good work!! :)
+              There's nothing to intervene keep up the good work!! :{")"}
             </Text>
           </View>
         </View>
 
-<View style={styles.trendSection}>
-  <View style={styles.trendHeader}>
-    <Text style={styles.trendIcon}></Text>
-    <Text style={styles.trendTitle}>Grade Trend</Text>
-  </View>
-  <Text style={styles.trendSubtitle}>
-    Academic Performance Overview • School Year 2024-2025
-  </Text>
-
-  <View style={styles.summaryRow}>
-    <View style={styles.summaryCard}>
-      <Text style={styles.summaryLabel}>OVERALL AVERAGE</Text>
-      <Text style={styles.summaryValue}>87.5 <Text style={styles.avgTag}>AVG</Text></Text>
-    </View>
-    <View style={styles.summaryCard}>
-      <Text style={styles.summaryLabel}>HIGHEST QUARTER</Text>
-      <Text style={styles.summaryValue}>Q4</Text>
-    </View>
-    <View style={styles.summaryCard}>
-      <Text style={styles.summaryLabel}>TREND DIRECTION</Text>
-      <View style={styles.trendDirection}>
-        <View style={styles.trendDot} />
-        <Text style={styles.trendText}>Stable</Text>
-      </View>
-    </View>
-  </View>
-
- <View style={styles.chartContainer}>
-    <LineChart
-      areaChart
-      curved={false}
-      data={[
-        { value: 85, label: 'Q1' },
-        { value: 88, label: 'Q2' },
-        { value: 86, label: 'Q3' },
-        { value: 91, label: 'Q4' },
-      ]}
-      height={240}
-      width={340}
-      disableScroll={true}           
-      scrollEnabled={false}
-      
-      color="#9333EA"
-      thickness={5}
-      startFillColor="#9333EA"
-      endFillColor="#E9D5FF"
-      startOpacity={0.4}
-      endOpacity={0.1}
-
-      hideDataPoints={false}
-      dataPointsColor="#9333EA"
-      dataPointsRadius={10}
-
-          minValue={60}
-        maxValue={100}
-        stepValue={10}
-        noOfSections={4}                
-       adjustToFitYRange={true}
-      
-        yAxisLabelWidth={40}
-        yAxisTextStyle={{ color: '#94A3B8', fontSize: 11 }}
-        yAxisSide="left"
-        yAxisThickness={0}
-
-
-
-      xAxisThickness={0}
-      xAxisLabelTextStyle={{ color: '#374151', fontSize: 10, fontWeight: '600' }}
-
-      hideRules
-
-      initialSpacing={10}
-      spacing={72}
-      endSpacing={70}
-
-      pointerConfig={{
-        pointerStripWidth: 3,
-        pointerStripColor: '#9333EA',
-        pointerColor: '#9333EA',
-        radius: 10,
-        pointerLabelWidth: 60,
-        pointerLabelHeight: 50,
-        activatePointersOnLongPress: true,
-        pointerLabelComponent: (items) => (
-          <View style={styles.pointerLabel}>
-            <Text style={styles.pointerQuarter}>{items[0].label}</Text>
-            <Text style={styles.pointerValue}>{items[0].value}</Text>
+        <View style={styles.trendSection}>
+          <View style={styles.trendHeader}>
+            <Text style={styles.trendIcon}></Text>
+            <Text style={styles.trendTitle}>Grade Trend</Text>
           </View>
-        ),
-      }}
-    />
-  </View>
+          <Text style={styles.trendSubtitle}>
+            Academic Performance Overview • School Year 2024-2025
+          </Text>
 
-  {/* Quarter Breakdown */}
-  <View style={styles.quarterBreakdown}>
-    <View style={styles.quarterItem}>
-      <Text style={styles.quarterLabel}>Q1</Text>
-      <Text style={styles.quarterGrade}>85</Text>
-    </View>
-    <View style={styles.quarterItem}>
-      <Text style={styles.quarterLabel}>Q2</Text>
-      <Text style={styles.quarterGrade}>88</Text>
-      <Text style={styles.changeText}>+3.0</Text>
-    </View>
-    <View style={styles.quarterItem}>
-      <Text style={styles.quarterLabel}>Q3</Text>
-      <Text style={styles.quarterGrade}>86</Text>
-      <Text style={styles.changeTextDecline}>-2.0</Text>
-    </View>
-    <View style={styles.quarterItem}>
-      <Text style={styles.quarterLabel}>Q4</Text>
-      <Text style={styles.quarterGrade}>91</Text>
-      <Text style={styles.changeTextBest}>+5.0</Text>
-    </View>
-  </View>
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>OVERALL AVERAGE</Text>
+              <Text style={styles.summaryValue}>
+                86.5 <Text style={styles.avgTag}>AVG</Text>
+              </Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>HIGHEST QUARTER</Text>
+              <Text style={styles.summaryValue}>Q1</Text>
+            </View>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>TREND DIRECTION</Text>
+              <View style={styles.trendDirection}>
+                <View style={styles.trendDot} />
+                <Text style={styles.trendText}>Stable</Text>
+              </View>
+            </View>
+          </View>
 
-  {/* Summary */}
-  <View style={styles.summaryNote}>
-    <Text style={styles.summaryNoteText}>
-      Your overall average is 87.5. Your grades remain consistent throughout the quarters. Your best performance was in Q4 with a grade of 91.
-    </Text>
-  </View>
-</View>
+          <View style={styles.chartContainer}>
+            <LineChart
+              areaChart
+              curved={false}
+              data={[
+                { value: 85, label: "Q1" },
+                // { value: 88, label: "Q2" },
+              ]}
+              height={240}
+              width={200}
+              disableScroll={true}
+              scrollEnabled={false}
+              color="#9333EA"
+              thickness={5}
+              startFillColor="#9333EA"
+              endFillColor="#E9D5FF"
+              startOpacity={0.4}
+              endOpacity={0.1}
+              hideDataPoints={false}
+              dataPointsColor="#9333EA"
+              dataPointsRadius={10}
+              minValue={60}
+              maxValue={100}
+              stepValue={10}
+              noOfSections={4}
+              adjustToFitYRange={true}
+              yAxisLabelWidth={40}
+              yAxisTextStyle={{ color: "#94A3B8", fontSize: 11 }}
+              yAxisSide="left"
+              yAxisThickness={0}
+              xAxisThickness={0}
+              xAxisLabelTextStyle={{
+                color: "#374151",
+                fontSize: 10,
+                fontWeight: "600",
+              }}
+              hideRules
+              initialSpacing={10}
+              spacing={72}
+              endSpacing={70}
+              pointerConfig={{
+                pointerStripWidth: 3,
+                pointerStripColor: "#9333EA",
+                pointerColor: "#9333EA",
+                radius: 10,
+                pointerLabelWidth: 60,
+                pointerLabelHeight: 50,
+                activatePointersOnLongPress: true,
+                pointerLabelComponent: (items) => (
+                  <View style={styles.pointerLabel}>
+                    <Text style={styles.pointerQuarter}>{items[0].label}</Text>
+                    <Text style={styles.pointerValue}>{items[0].value}</Text>
+                  </View>
+                ),
+              }}
+            />
+          </View>
+
+          {/* Quarter Breakdown */}
+          <View style={styles.quarterBreakdown}>
+            <View style={styles.quarterItem}>
+              <Text style={styles.quarterLabel}>Q1</Text>
+              <Text style={styles.quarterGrade}>85</Text>
+            </View>
+            <View style={styles.quarterItem}>
+              <Text style={styles.quarterLabel}>Q2</Text>
+              <Text style={styles.quarterGrade}>N/A</Text>
+              <Text style={styles.changeText}>--</Text>
+            </View>
+          </View>
+
+          {/* Summary */}
+          <View style={styles.summaryNote}>
+            <Text style={styles.summaryNoteText}>
+              Waiting for Second Quarter
+            </Text>
+          </View>
+        </View>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -423,12 +505,12 @@ const SubjectDetail = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFE4F0',
+    backgroundColor: "#FFE4F0",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -436,22 +518,22 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   notificationBadge: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   notificationText: {
     fontSize: 18,
@@ -460,29 +542,29 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#9C27B0',
+    backgroundColor: "#9C27B0",
   },
   scrollView: {
     flex: 1,
     paddingHorizontal: 16,
   },
   subjectCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
   },
   subjectIconContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
   },
   subjectIcon: {
     width: 56,
     height: 56,
     borderRadius: 16,
-    backgroundColor: '#E91E63',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#E91E63",
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 12,
   },
   subjectIconText: {
@@ -492,59 +574,59 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   subjectHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 4,
   },
   subjectTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1A1A1A',
+    fontWeight: "bold",
+    color: "#1A1A1A",
     flex: 1,
   },
   finalGradeBadge: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   finalGradeLabel: {
     fontSize: 10,
-    color: '#999',
+    color: "#999",
     marginBottom: 2,
   },
   finalGradeValue: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#00C853',
+    fontWeight: "bold",
+    color: "#00C853",
   },
   finalGradeTotal: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
   },
   teacherText: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
   exportButton: {
-    flexDirection: 'row',
-    backgroundColor: '#E91E63',
+    flexDirection: "row",
+    backgroundColor: "#E91E63",
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
   },
   exportButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   quarterTabs: {
     marginBottom: 16,
   },
   quarterTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 8,
     gap: 8,
   },
@@ -555,35 +637,35 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E91E63',
+    backgroundColor: "#E91E63",
   },
   quarterDotInactive: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E91E63',
+    backgroundColor: "#E91E63",
     opacity: 0.3,
   },
   quarterTabText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     marginBottom: 12,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   sectionContent: {
     marginTop: 16,
@@ -592,72 +674,72 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   workHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
   workTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   workScore: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#00C853',
+    fontWeight: "700",
+    color: "#00C853",
   },
   workDescription: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     marginBottom: 8,
   },
   statusBadge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
   },
   statusText: {
     fontSize: 11,
-    fontWeight: '600',
-    color: '#fff',
+    fontWeight: "600",
+    color: "#fff",
   },
   examCard: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 16,
   },
   examScore: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#00C853',
+    fontWeight: "bold",
+    color: "#00C853",
     marginBottom: 8,
   },
   quarterPlaceholder: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 24,
     marginBottom: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   quarterHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
     gap: 8,
   },
   quarterHeaderText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   placeholderIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#FFE4F0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFE4F0",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 16,
   },
   placeholderEmoji: {
@@ -665,19 +747,19 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 13,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     lineHeight: 20,
   },
   feedbackSection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     marginBottom: 12,
   },
   feedbackHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
     gap: 8,
   },
@@ -685,34 +767,34 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#FFE4F0',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#FFE4F0",
+    alignItems: "center",
+    justifyContent: "center",
   },
   feedbackIcon: {
     fontSize: 16,
   },
   feedbackTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#E91E63',
+    fontWeight: "600",
+    color: "#E91E63",
   },
   feedbackItem: {
     marginBottom: 12,
   },
   feedbackQuarter: {
     fontSize: 13,
-    fontWeight: '700',
-    color: '#E91E63',
+    fontWeight: "700",
+    color: "#E91E63",
     marginBottom: 4,
   },
   feedbackText: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     lineHeight: 18,
   },
   interventionSection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 16,
     marginBottom: 12,
@@ -722,20 +804,20 @@ const styles = StyleSheet.create({
   },
   interventionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#E91E63',
+    fontWeight: "600",
+    color: "#E91E63",
   },
   interventionPlaceholder: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 16,
   },
   interventionIconBox: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#D1FAE5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#D1FAE5",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 12,
   },
   interventionIcon: {
@@ -743,99 +825,133 @@ const styles = StyleSheet.create({
   },
   interventionText: {
     fontSize: 13,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
- trendSection: {
-    backgroundColor: '#FFFFFF',
+  trendSection: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 10,
   },
   trendHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginBottom: 6,
   },
   trendIcon: { fontSize: 22 },
-  trendTitle: { fontSize: 17, fontWeight: 'bold', color: '#E91E63' },
-  trendSubtitle: { fontSize: 12, color: '#6B7280', textAlign: 'center', marginBottom: 16 },
-  summaryRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+  trendTitle: { fontSize: 17, fontWeight: "bold", color: "#E91E63" },
+  trendSubtitle: {
+    fontSize: 12,
+    color: "#6B7280",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  summaryRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
   summaryCard: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
     padding: 12,
     borderRadius: 14,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: "#E5E7EB",
   },
-  summaryLabel: { fontSize: 10, color: '#6B7280', fontWeight: '600', marginBottom: 4 },
-  summaryValue: { fontSize: 19, fontWeight: 'bold', color: '#111827' },
+  summaryLabel: {
+    fontSize: 10,
+    color: "#6B7280",
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  summaryValue: { fontSize: 19, fontWeight: "bold", color: "#111827" },
   avgTag: {
     fontSize: 9,
-    backgroundColor: '#10B981',
-    color: 'white',
+    backgroundColor: "#10B981",
+    color: "white",
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
     marginLeft: 6,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-  trendDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#10B981' },
-  trendText: { color: '#10B981', fontWeight: 'bold', fontSize: 14 },
-  trendDirection: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  trendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#10B981",
+  },
+  trendText: { color: "#10B981", fontWeight: "bold", fontSize: 14 },
+  trendDirection: { flexDirection: "row", alignItems: "center", gap: 6 },
 
   chartContainer: {
-    alignItems: 'left',
-    justifyContent: 'center',
-    backgroundColor: '#FCFCFD',
+    alignItems: "left",
+    justifyContent: "center",
+    backgroundColor: "#FCFCFD",
     borderRadius: 16,
     paddingVertical: 0,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: '#F1F5F9',
+    borderColor: "#F1F5F9",
   },
 
   pointerLabel: {
-    backgroundColor: '#1E1B4B',
+    backgroundColor: "#1E1B4B",
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 12,
     marginTop: 90,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  pointerQuarter: { color: '#C4B5FD', fontSize: 12, fontWeight: 'bold' },
-  pointerValue: { color: '#FFFFFF', fontSize: 22, fontWeight: 'bold' },
+  pointerQuarter: { color: "#C4B5FD", fontSize: 12, fontWeight: "bold" },
+  pointerValue: { color: "#FFFFFF", fontSize: 22, fontWeight: "bold" },
 
-  quarterBreakdown: { flexDirection: 'row', justifyContent: 'space-around', marginTop: 16 },
-  quarterItem: { alignItems: 'center' },
-  quarterLabel: { color: '#64748B', fontSize: 12, marginBottom: 4 },
-  quarterGrade: { fontSize: 23, fontWeight: 'bold', color: '#111827' },
-  changeText: { color: '#10B981', fontSize: 11, fontWeight: '600', marginTop: 2 },
-  changeTextDecline: { color: '#EF4444', fontSize: 11, fontWeight: '600', marginTop: 2 },
-  changeTextBest: { color: '#10B981', fontSize: 12, fontWeight: '700', marginTop: 2 },
+  quarterBreakdown: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 16,
+  },
+  quarterItem: { alignItems: "center" },
+  quarterLabel: { color: "#64748B", fontSize: 12, marginBottom: 4 },
+  quarterGrade: { fontSize: 23, fontWeight: "bold", color: "#111827" },
+  changeText: {
+    color: "#10B981",
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 2,
+  },
+  changeTextDecline: {
+    color: "#EF4444",
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 2,
+  },
+  changeTextBest: {
+    color: "#10B981",
+    fontSize: 12,
+    fontWeight: "700",
+    marginTop: 2,
+  },
 
   summaryNote: {
-    backgroundColor: '#F0FDF4',
+    backgroundColor: "#F0FDF4",
     padding: 16,
     borderRadius: 14,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: '#BBF7D0',
+    borderColor: "#BBF7D0",
   },
   summaryNoteText: {
-    color: '#166534',
+    color: "#166534",
     fontSize: 13.5,
     lineHeight: 20,
-    textAlign: 'center',
-    fontWeight: '500',
+    textAlign: "center",
+    fontWeight: "500",
   },
 });
 

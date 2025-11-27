@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import Mainmenu from '../components/mainMenu';
+
+import React, { useMemo, useState } from "react";
+import Mainmenu from "../components/mainMenu";
 import {
   ScrollView,
   View,
@@ -7,11 +8,21 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  TrendingUp,
+  CalendarDays,
+  UserX,
+  Clock,
+  Book,
+  PenSquare,
+  ClipboardList,
+  Check,
+  X,
+} from "lucide-react-native";
 
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function AttendanceDashboard() {
   // Geting today's actual date to
@@ -43,42 +54,51 @@ export default function AttendanceDashboard() {
   const events = {};
 
   // Get events for selected date on calendar
-  const selectedEvents = events[`${currentYear}-${currentMonth}-${selectedDate}`] || [];
+  const selectedEvents =
+    events[`${currentYear}-${currentMonth}-${selectedDate}`] || [];
 
   // Subject data with both percentage and fraction tas ung colors is for progress bar
   const subjects = [
     {
-      name: 'Earth and Life Science',
-      percentage: 78,
+      name: "Earth and Life Science",
       attended: 7,
       total: 9,
-      color: '#fb7185', 
-      status: 'Late',
+      color: "#fb7185",
+      status: "Late",
     },
     {
-      name: 'Statistics & Probability',
-      percentage: 85,
+      name: "Statistics & Probability",
       attended: 8,
       total: 9,
-      color: '#7c3aed', 
-      status: 'Absent',
+      color: "#7c3aed",
+      status: "Absent",
     },
     {
-      name: 'Oral Communication',
-      percentage: 86,
+      name: "Oral Communication",
       attended: 8,
       total: 9,
-      color: '#3b82f6', 
-      status: 'Present',
+      color: "#3b82f6",
+      status: "Present",
     },
   ];
 
   const monthNames = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  const getDaysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
+  const getDaysInMonth = (month, year) =>
+    new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (month, year) => new Date(year, month, 1).getDay();
 
   const calendarDays = useMemo(() => {
@@ -96,7 +116,7 @@ export default function AttendanceDashboard() {
   }, [currentMonth, currentYear]);
 
   const changeMonth = (direction) => {
-    if (direction === 'prev') {
+    if (direction === "prev") {
       if (currentMonth === 0) {
         setCurrentMonth(11);
         setCurrentYear((y) => y - 1);
@@ -117,28 +137,28 @@ export default function AttendanceDashboard() {
   const calendarCellSize = Math.floor((SCREEN_WIDTH - 40 - 6 * 8) / 7); // padding at gaps
 
   return (
-   <SafeAreaView style={styles.safe}>
-  <View style={styles.mainMenuWrapper}>
-    <Mainmenu />
-  </View>
-  
-  <ScrollView 
-    style={styles.scrollView}
-    contentContainerStyle={styles.scrollContent}
-    showsVerticalScrollIndicator={false}
-  >
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.mainMenuWrapper}>
+        <Mainmenu />
+      </View>
 
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Attendance Overview modal */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardHeaderTitle}>📅 Attendance Overview</Text>
+            <CalendarDays color="#db2777" size={24} />
+            <Text style={styles.cardHeaderTitle}>Attendance Overview</Text>
           </View>
 
           <View style={styles.grid2}>
-            <View style={[styles.smallCard, { backgroundColor: '#fff7ed' }]}>
+            <View style={[styles.smallCard, { backgroundColor: "#fff7ed" }]}>
               <View style={styles.smallCardHeader}>
-                <View style={[styles.iconBox, { backgroundColor: '#fb923c' }]}>
-                  <Text style={styles.iconText}>📈</Text>
+                <View style={[styles.iconBox, { backgroundColor: "#fb923c" }]}>
+                  <TrendingUp color="#fff" size={24} />
                 </View>
                 <Text style={styles.deltaText}> +6%</Text>
               </View>
@@ -146,9 +166,14 @@ export default function AttendanceDashboard() {
               <Text style={styles.smallMuted}>Overall Attendance</Text>
             </View>
 
-            <View style={[styles.smallCard, { backgroundColor: '#eff6ff' }]}>
-              <View style={[styles.iconBox, { backgroundColor: '#60a5fa', marginBottom: 8 }]}>
-                <Text style={styles.iconText}>📅</Text>
+            <View style={[styles.smallCard, { backgroundColor: "#eff6ff" }]}>
+              <View
+                style={[
+                  styles.iconBox,
+                  { backgroundColor: "#60a5fa", marginBottom: 8 },
+                ]}
+              >
+                <CalendarDays color="#fff" size={24} />
               </View>
               <Text style={styles.bigNumber}>170</Text>
               <Text style={styles.smallMuted}>Days Present</Text>
@@ -157,20 +182,23 @@ export default function AttendanceDashboard() {
           </View>
 
           <View style={styles.grid2}>
-            <View style={[styles.smallCard, { backgroundColor: '#fff1f2' }]}>
+            <View style={[styles.smallCard, { backgroundColor: "#fff1f2" }]}>
               <View style={styles.smallCardHeader}>
-                <View style={[styles.iconBox, { backgroundColor: '#f87171' }]}>
-                  <Text style={styles.iconText}>❌</Text>
+                <View style={[styles.iconBox, { backgroundColor: "#f87171" }]}>
+                  <UserX color="#fff" size={24} />
                 </View>
-                <Text style={[styles.deltaText, { color: '#dc2626' }]}> -2 days</Text>
+                <Text style={[styles.deltaText, { color: "#dc2626" }]}>
+                  {" "}
+                  -2 days
+                </Text>
               </View>
               <Text style={styles.bigNumber}>30</Text>
               <Text style={styles.smallMuted}>Days Absent</Text>
             </View>
 
-            <View style={[styles.smallCard, { backgroundColor: '#faf5ff' }]}>
-              <View style={[styles.iconBox, { backgroundColor: '#a78bfa' }]}>
-                <Text style={styles.iconText}>⏰</Text>
+            <View style={[styles.smallCard, { backgroundColor: "#faf5ff" }]}>
+              <View style={[styles.iconBox, { backgroundColor: "#a78bfa" }]}>
+                <Clock color="#fff" size={24} />
               </View>
               <Text style={styles.bigNumber}>15</Text>
               <Text style={styles.smallMuted}>Tardiness</Text>
@@ -181,20 +209,31 @@ export default function AttendanceDashboard() {
         {/* Calendar modal */}
         <View style={styles.card}>
           <View style={styles.calendarHeader}>
-            <Text style={styles.calendarTitle}>{monthNames[currentMonth]} {currentYear}</Text>
+            <Text style={styles.calendarTitle}>
+              {monthNames[currentMonth]} {currentYear}
+            </Text>
             <View style={styles.monthBtns}>
-              <TouchableOpacity onPress={() => changeMonth('prev')} style={styles.monthButton}>
+              <TouchableOpacity
+                onPress={() => changeMonth("prev")}
+                style={styles.monthButton}
+              >
                 <Text style={styles.monthButtonText}>‹</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => changeMonth('next')} style={styles.monthButton}>
+              <TouchableOpacity
+                onPress={() => changeMonth("next")}
+                style={styles.monthButton}
+              >
                 <Text style={styles.monthButtonText}>›</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.weekRow}>
-            {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d) => (
-              <View key={d} style={[styles.weekDayCell, { width: calendarCellSize }]}>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+              <View
+                key={d}
+                style={[styles.weekDayCell, { width: calendarCellSize }]}
+              >
                 <Text style={styles.weekDayText}>{d}</Text>
               </View>
             ))}
@@ -203,9 +242,13 @@ export default function AttendanceDashboard() {
           <View style={styles.calendarGrid}>
             {calendarDays.map((day, idx) => {
               const isSelected = day === selectedDate;
-              const isToday = day === todayDate && currentMonth === todayMonth && currentYear === todayYear;
-              const hasEvents = day && events[`${currentYear}-${currentMonth}-${day}`];
-              
+              const isToday =
+                day === todayDate &&
+                currentMonth === todayMonth &&
+                currentYear === todayYear;
+              const hasEvents =
+                day && events[`${currentYear}-${currentMonth}-${day}`];
+
               return (
                 <TouchableOpacity
                   key={idx}
@@ -219,16 +262,18 @@ export default function AttendanceDashboard() {
                   ]}
                   activeOpacity={day ? 0.7 : 1}
                 >
-                  <Text style={[
-                    styles.calendarCellText, 
-                    isSelected ? styles.calendarCellTextSelected : null,
-                    isToday && !isSelected ? styles.calendarCellTextToday : null
-                  ]}>
-                    {day || ''}
+                  <Text
+                    style={[
+                      styles.calendarCellText,
+                      isSelected ? styles.calendarCellTextSelected : null,
+                      isToday && !isSelected
+                        ? styles.calendarCellTextToday
+                        : null,
+                    ]}
+                  >
+                    {day || ""}
                   </Text>
-                  {hasEvents && (
-                    <View style={styles.eventDot} />
-                  )}
+                  {hasEvents && <View style={styles.eventDot} />}
                 </TouchableOpacity>
               );
             })}
@@ -239,33 +284,63 @@ export default function AttendanceDashboard() {
         {selectedEvents.length > 0 && (
           <View style={styles.card}>
             <View style={styles.cardHeader}>
+              <PenSquare color="#db2777" size={24} />
               <Text style={styles.cardHeaderTitle}>
-                📌 Events on {monthNames[currentMonth]} {selectedDate}, {currentYear}
+                Events on {monthNames[currentMonth]} {selectedDate},{" "}
+                {currentYear}
               </Text>
             </View>
 
             <View>
               {selectedEvents.map((event, idx) => {
-                const isCompleted = event.status === 'completed';
-                const eventIcon = 
-                  event.type === 'assignment' ? '📝' :
-                  event.type === 'exam' ? '📋' :
-                  event.type === 'project' ? '🎯' : '📅';
-                
+                const isCompleted = event.status === "completed";
+                const eventIcon =
+                  event.type === "assignment"
+                    ? <PenSquare color="#fb923c" size={24} />
+                    : event.type === "exam"
+                    ? <ClipboardList color="#fb923c" size={24} />
+                    : event.type === "project"
+                    ? <Book color="#fb923c" size={24} />
+                    : <CalendarDays color="#fb923c" size={24} />;
+
                 return (
-                  <View key={idx} style={[styles.eventCard, isCompleted && styles.eventCardCompleted]}>
-                    <Text style={styles.eventIcon}>{eventIcon}</Text>
+                  <View
+                    key={idx}
+                    style={[
+                      styles.eventCard,
+                      isCompleted && styles.eventCardCompleted,
+                    ]}
+                  >
+                    <View style={{ marginRight: 12 }}>{eventIcon}</View>
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.eventTitle, isCompleted && styles.eventTitleCompleted]}>
+                      <Text
+                        style={[
+                          styles.eventTitle,
+                          isCompleted && styles.eventTitleCompleted,
+                        ]}
+                      >
                         {event.title}
                       </Text>
                       <Text style={styles.eventType}>
-                        {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                        {event.type.charAt(0).toUpperCase() +
+                          event.type.slice(1)}
                       </Text>
                     </View>
-                    <View style={[styles.statusBadge, isCompleted ? styles.statusCompleted : styles.statusPending]}>
-                      <Text style={[styles.statusText, isCompleted && styles.statusTextCompleted]}>
-                        {isCompleted ? 'Done' : 'Pending'}
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        isCompleted
+                          ? styles.statusCompleted
+                          : styles.statusPending,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.statusText,
+                          isCompleted && styles.statusTextCompleted,
+                        ]}
+                      >
+                        {isCompleted ? "Done" : "Pending"}
                       </Text>
                     </View>
                   </View>
@@ -278,17 +353,27 @@ export default function AttendanceDashboard() {
         {/* Subject Attendance modal */}
         <View style={styles.card}>
           <View style={styles.subjectHeader}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={styles.subjectIconBox}><Text>📚</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.subjectIconBox}>
+                <Book color="#db2777" size={24} />
+              </View>
               <Text style={styles.subjectTitle}>Subject Attendance</Text>
             </View>
 
             <TouchableOpacity
               onPress={() => setShowPercentage((s) => !s)}
-              style={[styles.toggleTrack, showPercentage ? styles.toggleOn : styles.toggleOff]}
+              style={[
+                styles.toggleTrack,
+                showPercentage ? styles.toggleOn : styles.toggleOff,
+              ]}
               activeOpacity={0.8}
             >
-              <View style={[styles.toggleKnob, showPercentage ? styles.toggleKnobOn : styles.toggleKnobOff]} />
+              <View
+                style={[
+                  styles.toggleKnob,
+                  showPercentage ? styles.toggleKnobOn : styles.toggleKnobOff,
+                ]}
+              />
             </TouchableOpacity>
           </View>
 
@@ -300,12 +385,26 @@ export default function AttendanceDashboard() {
                   <View style={styles.subjectRow}>
                     <Text style={styles.subjectName}>{subject.name}</Text>
                     <Text style={styles.subjectStat}>
-                      {showPercentage ? `${subject.percentage}%` : `${subject.attended}/${subject.total}`}
+                      {showPercentage
+                        ? `${Math.round(
+                            (subject.attended / subject.total) * 100
+                          )}%`
+                        : `${subject.attended}/${subject.total}`}
                     </Text>
                   </View>
 
                   <View style={styles.progressBg}>
-                    <View style={[styles.progressFill, { width: `${subject.percentage}%`, backgroundColor: subject.color }]} />
+                    <View
+                      style={[
+                        styles.progressFill,
+                        {
+                          width: `${Math.round(
+                            (subject.attended / subject.total) * 100
+                          )}%`,
+                          backgroundColor: subject.color,
+                        },
+                      ]}
+                    />
                   </View>
 
                   <Text style={styles.absencesText}>Absences: {absences}</Text>
@@ -318,32 +417,41 @@ export default function AttendanceDashboard() {
         {/* Recent Activity modal */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardHeaderTitle}>⏰ Recent Activity</Text>
+            <Clock color="#db2777" size={24} />
+            <Text style={styles.cardHeaderTitle}>Recent Activity</Text>
           </View>
 
           <View>
             {subjects.map((subject, idx) => {
               const status = subject.status;
               const bg =
-                status === 'Present' ? '#ecfdf5' :
-                status === 'Absent' ? '#fee2e2' :
-                '#fff7ed';
+                status === "Present"
+                  ? "#ecfdf5"
+                  : status === "Absent"
+                  ? "#fee2e2"
+                  : "#fff7ed";
               const icon =
-                status === 'Present' ? '✅' :
-                status === 'Absent' ? '❌' : '⏰';
+                status === "Present" ? <Check color="#16a34a" size={24} /> : status === "Absent" ? <X color="#dc2626" size={24} /> : <Clock color="#f97316" size={24} />;
               const color =
-                status === 'Present' ? '#16a34a' :
-                status === 'Absent' ? '#dc2626' :
-                '#f97316';
+                status === "Present"
+                  ? "#16a34a"
+                  : status === "Absent"
+                  ? "#dc2626"
+                  : "#f97316";
 
               return (
-                <View key={idx} style={[styles.activityRow, { backgroundColor: '#fafafa' }]}>
+                <View
+                  key={idx}
+                  style={[styles.activityRow, { backgroundColor: "#fafafa" }]}
+                >
                   <View style={[styles.statusCircle, { backgroundColor: bg }]}>
-                    <Text style={{ fontSize: 18 }}>{icon}</Text>
+                    {icon}
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.activityName}>{subject.name}</Text>
-                    <Text style={[styles.activityStatus, { color }]}>{status}</Text>
+                    <Text style={[styles.activityStatus, { color }]}>
+                      {status}
+                    </Text>
                   </View>
                 </View>
               );
@@ -359,44 +467,44 @@ export default function AttendanceDashboard() {
 
 const styles = StyleSheet.create({
   safe: {
-  flex: 1,
-  backgroundColor: '#fff7fb', // Same pink background
-},
-mainMenuWrapper: {
-  paddingHorizontal: 16,
-  paddingTop: 8,
-  backgroundColor: '#fff7fb',
-},
-scrollView: {
-  flex: 1,
-},
-scrollContent: {
-  padding: 16,          // or paddingHorizontal: 16
-  paddingTop: 8,
-  paddingBottom: 100,   // Space for bottom navigation
-},
+    flex: 1,
+    backgroundColor: "#fff7fb", // Same pink background
+  },
+  mainMenuWrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    backgroundColor: "#fff7fb",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16, // or paddingHorizontal: 16
+    paddingTop: 8,
+    paddingBottom: 100, // Space for bottom navigation
+  },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   avatarLeft: {
     width: 40,
     height: 40,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    overflow: 'hidden',
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    overflow: "hidden",
   },
   notificationDot: {
     width: 8,
     height: 8,
-    backgroundColor: '#ef4444',
+    backgroundColor: "#ef4444",
     borderRadius: 4,
-    position: 'absolute',
+    position: "absolute",
     right: -2,
     top: -2,
   },
@@ -405,12 +513,12 @@ scrollContent: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#c084fc',
+    backgroundColor: "#c084fc",
   },
 
   /* Dito ung Cards */
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 24,
     padding: 14,
     marginBottom: 12,
@@ -418,17 +526,20 @@ scrollContent: {
     elevation: 2,
   },
   cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
+    gap: 8,
   },
   cardHeaderTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   /* overview grid dito */
   grid2: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 10,
     marginBottom: 10,
   },
@@ -439,37 +550,37 @@ scrollContent: {
     marginRight: 8,
   },
   smallCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   iconBox: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  iconText: { fontSize: 18, color: '#fff' },
-  deltaText: { fontSize: 12, color: '#16a34a', fontWeight: '600' },
-  bigNumber: { fontSize: 28, fontWeight: '800', marginTop: 6 },
-  smallMuted: { fontSize: 13, color: '#6b7280' },
-  smallMutedExtra: { fontSize: 11, color: '#9ca3af' },
+  iconText: { fontSize: 18, color: "#fff" },
+  deltaText: { fontSize: 12, color: "#16a34a", fontWeight: "600" },
+  bigNumber: { fontSize: 28, fontWeight: "800", marginTop: 6 },
+  smallMuted: { fontSize: 13, color: "#6b7280" },
+  smallMutedExtra: { fontSize: 11, color: "#9ca3af" },
 
   /* calendar dito */
   calendarHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  calendarTitle: { fontSize: 16, fontWeight: '700', color: '#db2777' },
-  monthBtns: { flexDirection: 'row' },
+  calendarTitle: { fontSize: 16, fontWeight: "700", color: "#db2777" },
+  monthBtns: { flexDirection: "row" },
   monthButton: {
     width: 36,
     height: 36,
-    backgroundColor: '#fff0f6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff0f6",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 8,
     marginLeft: 8,
   },
@@ -477,21 +588,21 @@ scrollContent: {
 
   weekRow: {
     marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  weekDayCell: { alignItems: 'center' },
-  weekDayText: { fontSize: 12, color: '#6b7280' },
+  weekDayCell: { alignItems: "center" },
+  weekDayText: { fontSize: 12, color: "#6b7280" },
 
   calendarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: 8,
   },
   calendarCell: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
     marginBottom: 8,
   },
@@ -499,44 +610,44 @@ scrollContent: {
     opacity: 0,
   },
   calendarCellSelected: {
-    backgroundColor: '#fb923c',
-    shadowColor: '#fb923c',
+    backgroundColor: "#fb923c",
+    shadowColor: "#fb923c",
     shadowRadius: 6,
     elevation: 3,
   },
-  calendarCellText: { fontSize: 13, color: '#374151' },
-  calendarCellTextSelected: { color: '#fff', fontWeight: '700' },
+  calendarCellText: { fontSize: 13, color: "#374151" },
+  calendarCellTextSelected: { color: "#fff", fontWeight: "700" },
   calendarCellToday: {
     borderWidth: 2,
-    borderColor: '#fb923c',
+    borderColor: "#fb923c",
   },
   calendarCellTextToday: {
-    color: '#fb923c',
-    fontWeight: '700',
+    color: "#fb923c",
+    fontWeight: "700",
   },
   eventDot: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 4,
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#fb923c',
+    backgroundColor: "#fb923c",
   },
 
   /* events dito */
   eventCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fafafa',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fafafa",
     padding: 12,
     borderRadius: 12,
     marginBottom: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#fb923c',
+    borderLeftColor: "#fb923c",
   },
   eventCardCompleted: {
     opacity: 0.7,
-    borderLeftColor: '#10b981',
+    borderLeftColor: "#10b981",
   },
   eventIcon: {
     fontSize: 24,
@@ -544,18 +655,18 @@ scrollContent: {
   },
   eventTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
+    fontWeight: "600",
+    color: "#111827",
     marginBottom: 4,
   },
   eventTitleCompleted: {
-    textDecorationLine: 'line-through',
-    color: '#6b7280',
+    textDecorationLine: "line-through",
+    color: "#6b7280",
   },
   eventType: {
     fontSize: 12,
-    color: '#6b7280',
-    textTransform: 'capitalize',
+    color: "#6b7280",
+    textTransform: "capitalize",
   },
   statusBadge: {
     paddingHorizontal: 10,
@@ -563,81 +674,81 @@ scrollContent: {
     borderRadius: 12,
   },
   statusPending: {
-    backgroundColor: '#fff7ed',
+    backgroundColor: "#fff7ed",
   },
   statusCompleted: {
-    backgroundColor: '#d1fae5',
+    backgroundColor: "#d1fae5",
   },
   statusText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#f97316',
+    fontWeight: "700",
+    color: "#f97316",
   },
   statusTextCompleted: {
-    color: '#10b981',
+    color: "#10b981",
   },
 
   /* subjects dito */
   subjectHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   subjectIconBox: {
     width: 34,
     height: 34,
     borderRadius: 8,
-    backgroundColor: '#fff0f6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff0f6",
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 8,
   },
-  subjectTitle: { fontSize: 16, fontWeight: '700' },
+  subjectTitle: { fontSize: 16, fontWeight: "700" },
 
   toggleTrack: {
     width: 48,
     height: 26,
     borderRadius: 20,
     padding: 3,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
-  toggleOn: { backgroundColor: '#fb7185' },
-  toggleOff: { backgroundColor: '#e5e7eb' },
+  toggleOn: { backgroundColor: "#fb7185" },
+  toggleOff: { backgroundColor: "#e5e7eb" },
   toggleKnob: {
     width: 20,
     height: 20,
     borderRadius: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 2,
   },
-  toggleKnobOn: { alignSelf: 'flex-end' },
-  toggleKnobOff: { alignSelf: 'flex-start' },
+  toggleKnobOn: { alignSelf: "flex-end" },
+  toggleKnobOff: { alignSelf: "flex-start" },
 
   subjectRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  subjectName: { fontSize: 14, fontWeight: '600', color: '#374151' },
-  subjectStat: { fontSize: 13, fontWeight: '700' },
+  subjectName: { fontSize: 14, fontWeight: "600", color: "#374151" },
+  subjectStat: { fontSize: 13, fontWeight: "700" },
 
   progressBg: {
     height: 10,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: "#f3f4f6",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginTop: 8,
   },
   progressFill: {
     height: 10,
     borderRadius: 8,
   },
-  absencesText: { fontSize: 12, color: '#6b7280', marginTop: 6 },
+  absencesText: { fontSize: 12, color: "#6b7280", marginTop: 6 },
 
   /* recent activity dito */
   activityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
     borderRadius: 12,
     marginBottom: 8,
@@ -646,10 +757,10 @@ scrollContent: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 12,
   },
-  activityName: { fontSize: 13, fontWeight: '700', color: '#111827' },
-  activityStatus: { fontSize: 12, fontWeight: '700' },
+  activityName: { fontSize: 13, fontWeight: "700", color: "#111827" },
+  activityStatus: { fontSize: 12, fontWeight: "700" },
 });

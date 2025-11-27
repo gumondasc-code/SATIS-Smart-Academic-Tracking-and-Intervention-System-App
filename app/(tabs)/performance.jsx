@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Mainmenu from '../components/mainMenu';
+import { BarChart, Target, AlertTriangle, TrendingUp, Filter, User } from 'lucide-react-native';
 
 const AcademicTracker = () => {
   const router = useRouter();
@@ -61,13 +62,13 @@ const AcademicTracker = () => {
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={[styles.statCard, styles.statCardHalf]}>
-            <Text style={styles.statIcon}>📊</Text>
+            <BarChart color="#2196F3" size={24} style={styles.statIcon} />
             <Text style={styles.statLabel}>Overall Average</Text>
            <Text style={styles.statValue}>{stats.average}%</Text>
           </View>
           
           <View style={[styles.statCard, styles.statCardHalf]}>
-            <Text style={styles.statIcon}>🎯</Text>
+            <Target color="#00C853" size={24} style={styles.statIcon} />
             <Text style={styles.statLabel}>Highest Grade</Text>
             <Text style={[styles.statValue, { color: '#00C853' }]}>{stats.highest}</Text>
           </View>
@@ -75,13 +76,13 @@ const AcademicTracker = () => {
 
         <View style={styles.statsContainer}>
           <View style={[styles.statCard, styles.statCardHalf]}>
-            <Text style={styles.statIcon}>⚠️</Text>
+            <AlertTriangle color="#F44336" size={24} style={styles.statIcon} />
             <Text style={styles.statLabel}>Lowest Grade</Text>
             <Text style={[styles.statValue, { color: '#F44336' }]}>{stats.lowest}</Text>
           </View>
           
           <View style={[styles.statCard, styles.statCardHalf]}>
-            <Text style={styles.statIcon}>📈</Text>
+            <TrendingUp color="#9C27B0" size={24} style={styles.statIcon} />
             <Text style={styles.statLabel}>Passing Subjects</Text>
             <Text style={[styles.statValue, { color: '#9C27B0' }]}>{stats.passed} / {stats.total}</Text>
             </View>
@@ -89,7 +90,10 @@ const AcademicTracker = () => {
 
         {/* Filters */}
         <View style={styles.filterContainer}>
-          <Text style={styles.filterIcon}>🔽 Filter</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+            <Filter color="#999" size={12} />
+            <Text style={styles.filterIcon}>Filter</Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
             <TouchableOpacity
               style={[styles.filterButton, activeFilter === 'all' && styles.filterButtonActive]}
@@ -136,7 +140,10 @@ const AcademicTracker = () => {
                     })}
                     >
                       <Text style={styles.subjectName}>{subject.name}</Text>
-                      <Text style={styles.teacherName}>👤 {subject.teacher}</Text>
+                      <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+                        <User color="#666" size={13} />
+                        <Text style={styles.teacherName}>{subject.teacher}</Text>
+                      </View>
                       <Text style={styles.gradeLabel}>EXPECTED FINAL GRADE</Text>
                       <Text style={[styles.gradeValue, { color: getGradeColor(subject.grade) }]}>
                         {subject.grade}
@@ -212,7 +219,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statIcon: {
-    fontSize: 20,
     marginBottom: 8,
   },
   statLabel: {

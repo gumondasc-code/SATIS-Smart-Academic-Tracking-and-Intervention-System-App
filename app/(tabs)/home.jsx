@@ -1,139 +1,141 @@
-import React, { useState, useEffect, useRef } from "react";
-import Mainmenu from "../components/mainMenu";
-
+import React from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TextInput,
   TouchableOpacity,
-  Image,
   ImageBackground,
-  Animated,
-  Dimensions,
-  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  GraduationCap,
+  AlertTriangle,
+  ClipboardCheck,
+  BookCheck,
+  BarChart2,
+  CheckSquare,
+  TrendingUp,
+} from "lucide-react-native";
 import { useRouter } from "expo-router";
+import Mainmenu from "../components/mainMenu";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.mainMenuWrapper}>
         <Mainmenu />
       </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-
-        {/* Welcome Card */}
+        {/* Welcome Section */}
         <ImageBackground
-          source={require('../../assets/school.jpg')}
+          source={require("../../assets/school.jpg")}
           style={styles.welcomeCard}
           imageStyle={styles.welcomeCardImage}
         >
           <View style={styles.welcomeOverlay}>
             <Text style={styles.welcomeTitle}>Welcome Back, Sheena!</Text>
-            <Text style={styles.welcomeSubtitle}>From Grade 12 - TVL</Text>
+            <Text style={styles.welcomeSubtitle}>
+              Here's a summary of your academic progress.
+            </Text>
           </View>
         </ImageBackground>
 
-        {/* Stats Grid - Row 1 */}
+        {/* Key Stats */}
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>GPA</Text>
+            <GraduationCap size={24} color="#FF6B9D" />
             <Text style={styles.statValue}>3.5</Text>
+            <Text style={styles.statLabel}>GPA</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Subjects at Risk</Text>
-            <Text style={styles.statValue}>3</Text>
-          </View>
-        </View>
-
-        {/* Stats Grid - Row 2 */}
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Attendance</Text>
+            <ClipboardCheck size={24} color="#FF6B9D" />
             <Text style={styles.statValue}>85%</Text>
+            <Text style={styles.statLabel}>Attendance</Text>
           </View>
+          <TouchableOpacity
+            onPress={() => router.push("/subject")}
+            style={styles.statCard}
+          >
+            <AlertTriangle size={24} color="#FF6B9D" />
+            <Text style={styles.statValue}>3</Text>
+            <Text style={styles.statLabel}>At Risk</Text>
+          </TouchableOpacity>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Task Completion</Text>
+            <BookCheck size={24} color="#FF6B9D" />
             <Text style={styles.statValue}>70%</Text>
+            <Text style={styles.statLabel}>Tasks Done</Text>
           </View>
         </View>
 
-        {/* Performance Metrics */}
-        <View style={styles.metricsCard}>
-          <Text style={styles.metricsTitle}>Performance Metrics</Text>
-
-          <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Academic Performance</Text>
-            <View style={styles.progressBarContainer}>
-              <View style={[styles.progressBar, { width: "45%" }]} />
-            </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>0</Text>
-              <Text style={styles.progressLabel}>25</Text>
-              <Text style={styles.progressLabel}>50</Text>
-              <Text style={styles.progressLabel}>75</Text>
-              <Text style={styles.progressLabel}>100</Text>
-            </View>
+        {/* Performance Overview */}
+        <View style={styles.performanceCard}>
+          <View style={styles.performanceHeader}>
+            <BarChart2 size={24} color="#333" />
+            <Text style={styles.performanceTitle}>Performance Overview</Text>
           </View>
-
-          <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Attendance Rate</Text>
-            <View style={styles.progressBarContainer}>
-              <View style={[styles.progressBar, { width: "85%" }]} />
+          <View style={styles.performanceItem}>
+            <Text style={styles.performanceLabel}>Academic Performance</Text>
+            <View style={styles.progressBar}>
+              <View style={[styles.progress, { width: "45%" }]} />
             </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>0</Text>
-              <Text style={styles.progressLabel}>25</Text>
-              <Text style={styles.progressLabel}>50</Text>
-              <Text style={styles.progressLabel}>75</Text>
-              <Text style={styles.progressLabel}>100</Text>
-            </View>
+            <Text style={styles.progressText}>45%</Text>
           </View>
-
-          <View style={styles.metricItem}>
-            <Text style={styles.metricLabel}>Task Completion</Text>
-            <View style={styles.progressBarContainer}>
-              <View style={[styles.progressBar, { width: "70%" }]} />
+          <View style={styles.performanceItem}>
+            <Text style={styles.performanceLabel}>Attendance Rate</Text>
+            <View style={styles.progressBar}>
+              <View style={[styles.progress, { width: "85%" }]} />
             </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>0</Text>
-              <Text style={styles.progressLabel}>25</Text>
-              <Text style={styles.progressLabel}>50</Text>
-              <Text style={styles.progressLabel}>75</Text>
-              <Text style={styles.progressLabel}>100</Text>
+            <Text style={styles.progressText}>85%</Text>
+          </View>
+          <View style={styles.performanceItem}>
+            <Text style={styles.performanceLabel}>Task Completion</Text>
+            <View style={styles.progressBar}>
+              <View style={[styles.progress, { width: "70%" }]} />
             </View>
+            <Text style={styles.progressText}>70%</Text>
           </View>
         </View>
 
-        {/* Bottom Stats Summary */}
-        <View style={styles.bottomStatsCard}>
-          <View style={styles.bottomStatsRow}>
-            <View style={styles.bottomStat}>
-              <Text style={styles.bottomStatValue}>71.7%</Text>
-              <Text style={styles.bottomStatLabel}>Average Grade</Text>
+        {/* Recent Activity */}
+        <View style={styles.activityCard}>
+          <View style={styles.activityHeader}>
+            <TrendingUp size={24} color="#333" />
+            <Text style={styles.activityTitle}>Recent Activity</Text>
+          </View>
+          <View style={styles.activityItem}>
+            <View style={styles.activityIcon}>
+              <CheckSquare size={20} color="#4CAF50" />
             </View>
-            <View style={styles.bottomStat}>
-              <Text style={styles.bottomStatValue}>85%</Text>
-              <Text style={styles.bottomStatLabel}>Attendance</Text>
+            <View>
+              <Text style={styles.activityText}>
+                Intervention for{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  Statistics and Probability
+                </Text>{" "}
+                completed.
+              </Text>
+              <Text style={styles.activityTime}>2 days ago</Text>
             </View>
           </View>
-          <View style={[styles.bottomStatsRow, styles.lastBottomRow]}>
-            <View style={styles.bottomStat}>
-              <Text style={styles.bottomStatValue}>3/3</Text>
-              <Text style={styles.bottomStatLabel}>Subjects Tracked</Text>
+          <View style={styles.activityItem}>
+            <View style={styles.activityIcon}>
+              <AlertTriangle size={20} color="#FF9800" />
             </View>
-            <View style={styles.bottomStat}>
-              <Text style={styles.bottomStatValue}>70%</Text>
-              <Text style={styles.bottomStatLabel}>Tasks Complete</Text>
+            <View>
+              <Text style={styles.activityText}>
+                New intervention for{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  Earth and Life Science.
+                </Text>
+              </Text>
+              <Text style={styles.activityTime}>3 days ago</Text>
             </View>
           </View>
         </View>
@@ -144,190 +146,167 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   safe: {
-  flex: 1,
-  backgroundColor: '#fff7fb', // Same pink background
-},
-mainMenuWrapper: {
-  paddingHorizontal: 16,
-  paddingTop: 8,
-  backgroundColor: '#fff7fb',
-},
-scrollView: {
-  flex: 1,
-},
-scrollContent: {
-  padding: 16,          // or paddingHorizontal: 16
-  paddingTop: 8,
-  paddingBottom: 100,   // Space for bottom navigation
-},
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 25,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginTop: 12,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: "#1f2937",
-   
+    backgroundColor: "#F4F7FC",
   },
-  bellIcon: {
-    marginLeft: 10,
-    padding: 4,
+  mainMenuWrapper: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    backgroundColor: "#F4F7FC",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 100,
   },
   welcomeCard: {
     borderRadius: 20,
-    marginBottom: 20,
-    overflow: 'hidden',
-    height: 160,
-    justifyContent: 'flex-top',
+    marginBottom: 24,
+    overflow: "hidden",
+    height: 180,
+    justifyContent: "center",
   },
   welcomeCardImage: {
     borderRadius: 20,
   },
   welcomeOverlay: {
-    padding: 20,
-    
+    padding: 24,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   welcomeTitle: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#000000",
-    marginBottom: 6,
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginBottom: 8,
   },
   welcomeSubtitle: {
     fontSize: 16,
-    color: "#000000",
-    opacity: 0.9,
-    fontWeight: "500",
+    color: "#FFFFFF",
   },
   statsGrid: {
     flexDirection: "row",
-    gap: 16,
-    marginBottom: 16,
+    flexWrap: "wrap",
+    justifyContent: "space-evenly",
+    marginBottom: 10,
   },
   statCard: {
-    flex: 1,
+    width: "40%",
     backgroundColor: "white",
     borderRadius: 20,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
+    padding: 10,
     alignItems: "center",
-    justifyContent: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    marginBottom: 16,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#1f2937",
+    marginVertical: 8,
   },
   statLabel: {
     fontSize: 12,
-    fontWeight: "600",
     color: "#6b7280",
-    marginBottom: 12,
     textAlign: "center",
   },
-  statValue: {
-    fontSize: 48,
-    fontWeight: "700",
-    color: "#1f2937",
-  },
-  metricsCard: {
+  performanceCard: {
     backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  metricsTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1f2937",
-    marginBottom: 20,
-  },
-  metricItem: {
     marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  lastMetricItem: {
-    marginBottom: 0,
+  performanceHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
   },
-  metricLabel: {
+  performanceTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1f2937",
+    marginLeft: 8,
+  },
+  performanceItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  performanceLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: "#374151",
+  },
+  progressBar: {
+    flex: 2,
+    height: 12,
+    backgroundColor: "#E5E7EB",
+    borderRadius: 6,
+    marginHorizontal: 12,
+  },
+  progress: {
+    height: "100%",
+    backgroundColor: "#FF6B9D",
+    borderRadius: 6,
+  },
+  progressText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#1f2937",
-    marginBottom: 12,
   },
-  progressBarContainer: {
-    height: 32,
-    backgroundColor: "#e5e7eb",
-    borderRadius: 16,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: "100%",
-    backgroundColor: "#f9a8d4",
-    borderRadius: 16,
-  },
-  progressLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 4,
-  },
-  progressLabel: {
-    fontSize: 11,
-    color: "#9ca3af",
-  },
-  bottomStatsCard: {
+  activityCard: {
     backgroundColor: "white",
     borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
+    padding: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  bottomStatsRow: {
+  activityHeader: {
     flexDirection: "row",
-    gap: 20,
-    marginBottom: 24,
-  },
-  lastBottomRow: {
-    marginBottom: 0,
-  },
-  bottomStat: {
-    flex: 1,
     alignItems: "center",
+    marginBottom: 16,
   },
-  bottomStatValue: {
-    fontSize: 48,
-    fontWeight: "700",
+  activityTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#1f2937",
-    marginBottom: 8,
+    marginLeft: 8,
   },
-  bottomStatLabel: {
+  activityItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  activityIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#FCE4EC",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  activityText: {
+    flex: 1,
+    fontSize: 14,
+    color: "#374151",
+  },
+  activityTime: {
     fontSize: 12,
-    color: "#6b7280",
-    textAlign: "center",
-    fontWeight: "500",
+    color: "#9CA3AF",
+    marginTop: 4,
   },
 });
