@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import Mainmenu from "../components/mainMenu";
+import SemesterToggle from "../components/SemesterToggle";
 import {
   BarChart,
   Target,
@@ -31,26 +32,50 @@ const PerformanceAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(null);
 
-  const fetchData = async (isRefresh = false) => {
+  const fetchData = useCallback(async (semester = null, isRefresh = false) => {
     try {
       if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-      const res = await axios.get("/student/performance");
+      else if (!semester) setLoading(true);
+
+      const params = semester ? { semester } : {};
+      const res = await axios.get("/student/performance", { params });
       setData(res.data);
       setError(null);
+
+      // Set initial semester from response if not already set
+      if (semester === null && res.data?.semesters?.selected) {
+        setSelectedSemester(res.data.semesters.selected);
+      }
     } catch (err) {
       console.warn("Performance fetch error", err?.response || err);
-      setError(err?.response?.data?.message || "Failed to load performance data");
+      setError(
+        err?.response?.data?.message || "Failed to load performance data"
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleSemesterChange = useCallback(
+    async (semester) => {
+      if (semester === selectedSemester) return;
+      setSelectedSemester(semester);
+      setLoading(true);
+      await fetchData(semester);
+    },
+    [fetchData, selectedSemester]
+  );
+
+  const onRefresh = useCallback(async () => {
+    await fetchData(selectedSemester, true);
+  }, [fetchData, selectedSemester]);
 
   const stats = data?.stats || {};
   const subjects = data?.subjectPerformance || [];
@@ -81,9 +106,14 @@ const PerformanceAnalytics = () => {
   };
 
   const filteredSubjects = subjects.filter((subject) => {
-    if (activeFilter === "excellent") return subject.grade !== null && subject.grade >= 90;
-    if (activeFilter === "good") return subject.grade !== null && subject.grade >= 85 && subject.grade < 90;
-    if (activeFilter === "at-risk") return subject.grade !== null && subject.grade < 75;
+    if (activeFilter === "excellent")
+      return subject.grade !== null && subject.grade >= 90;
+    if (activeFilter === "good")
+      return (
+        subject.grade !== null && subject.grade >= 85 && subject.grade < 90
+      );
+    if (activeFilter === "at-risk")
+      return subject.grade !== null && subject.grade < 75;
     return true;
   });
 
@@ -101,7 +131,8 @@ const PerformanceAnalytics = () => {
       return {
         icon: "star",
         title: "You're on the right track",
-        message: "You're doing well. Focus on the subjects that need attention to boost your overall grade.",
+        message:
+          "You're doing well. Focus on the subjects that need attention to boost your overall grade.",
         color: "#D1FAE5",
         textColor: "#065F46",
       };
@@ -117,7 +148,7 @@ const PerformanceAnalytics = () => {
 
   const statusMessage = getStatusMessage();
 
-  if (loading) {
+  if (loading && !refreshing) {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.loadingContainer}>
@@ -149,7 +180,12 @@ const PerformanceAnalytics = () => {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchData(true)} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#DB2777"]}
+            tintColor="#DB2777"
+          />
         }
       >
         {/* Header */}
@@ -159,12 +195,22 @@ const PerformanceAnalytics = () => {
               <BarChart color="#DB2777" size={28} />
               <Text style={styles.title}>Performance Analytics</Text>
             </View>
-            <TouchableOpacity onPress={() => fetchData(true)} style={styles.refreshBtn}>
+            <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
               <RefreshCw color="#6B7280" size={20} />
               <Text style={styles.refreshText}>Refresh</Text>
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Semester Toggle */}
+        <SemesterToggle
+          currentSemester={data?.semesters?.current || 1}
+          selectedSemester={data?.semesters?.selected || selectedSemester || 1}
+          schoolYear={data?.semesters?.schoolYear || ""}
+          semester1Count={data?.semesters?.semester1Count || 0}
+          semester2Count={data?.semesters?.semester2Count || 0}
+          onSemesterChange={handleSemesterChange}
+        />
 
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
@@ -202,15 +248,21 @@ const PerformanceAnalytics = () => {
         </View>
 
         {/* Status Message */}
-        <View style={[styles.statusCard, { backgroundColor: statusMessage.color }]}>
+        <View
+          style={[styles.statusCard, { backgroundColor: statusMessage.color }]}
+        >
           <View style={styles.statusIconBox}>
             <TrendingUp color={statusMessage.textColor} size={24} />
           </View>
           <View style={styles.statusContent}>
-            <Text style={[styles.statusTitle, { color: statusMessage.textColor }]}>
+            <Text
+              style={[styles.statusTitle, { color: statusMessage.textColor }]}
+            >
               {statusMessage.title}
             </Text>
-            <Text style={[styles.statusMessage, { color: statusMessage.textColor }]}>
+            <Text
+              style={[styles.statusMessage, { color: statusMessage.textColor }]}
+            >
               {statusMessage.message}
             </Text>
           </View>
@@ -267,10 +319,20 @@ const PerformanceAnalytics = () => {
                 </View>
                 <Text style={styles.gradeLabel}>CURRENT GRADE</Text>
                 <View style={styles.gradeRow}>
-                  <Text style={[styles.gradeValue, { color: getGradeColor(subject.grade) }]}>
+                  <Text
+                    style={[
+                      styles.gradeValue,
+                      { color: getGradeColor(subject.grade) },
+                    ]}
+                  >
                     {subject.grade ?? "--"}
                   </Text>
-                  <Text style={[styles.remarksText, { color: getRemarksColor(subject.remarks) }]}>
+                  <Text
+                    style={[
+                      styles.remarksText,
+                      { color: getRemarksColor(subject.remarks) },
+                    ]}
+                  >
                     {subject.remarks}
                   </Text>
                 </View>
@@ -290,7 +352,9 @@ const PerformanceAnalytics = () => {
           ) : (
             <View style={styles.emptyState}>
               <BookOpen color="#9CA3AF" size={48} />
-              <Text style={styles.emptyStateText}>No subjects match this filter.</Text>
+              <Text style={styles.emptyStateText}>
+                No subjects match this filter.
+              </Text>
             </View>
           )}
         </View>
@@ -298,8 +362,8 @@ const PerformanceAnalytics = () => {
         {/* Footer hint */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Click on any subject card to view detailed analytics, grade breakdown, and
-            personalized study suggestions.
+            Click on any subject card to view detailed analytics, grade
+            breakdown, and personalized study suggestions.
           </Text>
         </View>
       </ScrollView>

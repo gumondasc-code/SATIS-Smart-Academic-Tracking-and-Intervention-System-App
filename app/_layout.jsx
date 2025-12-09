@@ -5,7 +5,7 @@ import { Stack } from "expo-router";
 import { View, Text } from "react-native";
 
 function RootLayoutNav() {
-  const { user, loading } = useAuth();
+  const { user, loading, mustChangePassword } = useAuth();
   const router = useRouter();
   const segments = useSegments();
 
@@ -14,13 +14,28 @@ function RootLayoutNav() {
 
     const inTabsGroup = segments[0] === "(tabs)";
     const inAuthGroup = segments[0] === "(auth)";
+    const isForceChangePassword = segments
+      .join("/")
+      .includes("force-change-password");
 
     // List of allowed screens outside of tabs for authenticated users
     const allowedScreens = ["SubjectDetail", "SubjectAnalytics", "Screens"];
     const isAllowedScreen = allowedScreens.includes(segments[0]);
 
-    if (user && inAuthGroup) {
-      // User is signed in but in auth screens, redirect to home
+    // If user must change password, redirect to force-change-password screen
+    if (user && mustChangePassword && !isForceChangePassword) {
+      router.replace("/(auth)/force-change-password");
+      return;
+    }
+
+    // If user has changed password, redirect away from force-change-password
+    if (user && !mustChangePassword && isForceChangePassword) {
+      router.replace("/home");
+      return;
+    }
+
+    if (user && inAuthGroup && !isForceChangePassword) {
+      // User is signed in but in auth screens (not force-change-password), redirect to home
       router.replace("/home");
     } else if (!user && inTabsGroup) {
       // User is signed out but in the main app stack.
@@ -31,7 +46,7 @@ function RootLayoutNav() {
       router.replace("/login");
     }
     // If user is authenticated and on allowed screens or tabs, do nothing
-  }, [user, loading, segments, router]);
+  }, [user, loading, mustChangePassword, segments, router]);
 
   if (loading) {
     return (

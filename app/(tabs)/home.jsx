@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -25,6 +26,7 @@ import SubjectCard from "../components/SubjectCard";
 import NotificationItem from "../components/NotificationItem";
 import MiniChart from "../components/MiniChart";
 import QuickActionCard from "../components/QuickActionCard";
+import SemesterToggle from "../components/SemesterToggle";
 
 // Helper function for time-based greeting
 const getGreeting = () => {
@@ -38,26 +40,55 @@ export default function Home() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
   const [greeting, setGreeting] = useState(getGreeting());
+  const [selectedSemester, setSelectedSemester] = useState(null);
+
+  const fetchDashboard = useCallback(async (semester = null) => {
+    try {
+      const params = semester ? { semester } : {};
+      const res = await axios.get(`/student/dashboard`, { params });
+      setData(res.data);
+      // Set initial semester from response if not already set
+      if (semester === null && res.data?.semesters?.selected) {
+        setSelectedSemester(res.data.semesters.selected);
+      }
+    } catch (err) {
+      console.warn("Home: failed to load dashboard", err?.response || err);
+      setError(err?.response?.data?.message || "Failed to load dashboard");
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`/student/dashboard`);
-        if (!mounted) return;
-        setData(res.data);
-      } catch (err) {
-        console.warn("Home: failed to load dashboard", err?.response || err);
-        setError(err?.response?.data?.message || "Failed to load dashboard");
+        await fetchDashboard();
       } finally {
         if (mounted) setLoading(false);
       }
     })();
     return () => (mounted = false);
-  }, []);
+  }, [fetchDashboard]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchDashboard(selectedSemester);
+    setRefreshing(false);
+  }, [fetchDashboard, selectedSemester]);
+
+  const handleSemesterChange = useCallback(
+    async (semester) => {
+      if (semester === selectedSemester) return;
+      setSelectedSemester(semester);
+      setLoading(true);
+      await fetchDashboard(semester);
+      setLoading(false);
+    },
+    [fetchDashboard, selectedSemester]
+  );
 
   const markNotificationRead = async (notificationId) => {
     try {
@@ -100,7 +131,7 @@ export default function Home() {
     }
   };
 
-  if (loading) {
+  if (loading && !refreshing) {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={[styles.center, { flex: 1 }]}>
@@ -119,6 +150,14 @@ export default function Home() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#DB2777"]}
+            tintColor="#DB2777"
+          />
+        }
       >
         {/* Welcome Section */}
         <ImageBackground
@@ -135,6 +174,16 @@ export default function Home() {
             </Text>
           </View>
         </ImageBackground>
+
+        {/* Semester Toggle */}
+        <SemesterToggle
+          currentSemester={data?.semesters?.current || 1}
+          selectedSemester={data?.semesters?.selected || selectedSemester || 1}
+          schoolYear={data?.semesters?.schoolYear || ""}
+          semester1Count={data?.semesters?.semester1Count || 0}
+          semester2Count={data?.semesters?.semester2Count || 0}
+          onSemesterChange={handleSemesterChange}
+        />
 
         {/* Key Stats */}
         <View style={styles.statsGrid}>

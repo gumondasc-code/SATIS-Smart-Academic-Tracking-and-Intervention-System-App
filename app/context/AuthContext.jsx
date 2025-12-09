@@ -23,6 +23,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mustChangePassword, setMustChangePassword] = useState(false);
 
   useEffect(() => {
     // On startup, check for a stored token and validate it by fetching the user.
@@ -41,12 +42,16 @@ export function AuthProvider({ children }) {
           // Try to fetch the authenticated user from the backend (relative path because baseURL is set)
           try {
             const res = await axios.get(`/user`);
-            setUser({ token: session, ...res.data });
+            const userData = res.data;
+            setUser({ token: session, ...userData });
+            // Check if user must change password
+            setMustChangePassword(userData.must_change_password ?? false);
           } catch (err) {
             // Token invalid or request failed — remove stored session
             await SecureStore.deleteItemAsync("user_session");
             delete axios.defaults.headers.common["Authorization"];
             setUser(null);
+            setMustChangePassword(false);
           }
         }
       } catch (err) {
@@ -66,6 +71,7 @@ export function AuthProvider({ children }) {
 
       const token = res.data.token;
       const userData = res.data.user;
+      const needsPasswordChange = res.data.must_change_password ?? false;
 
       // persist token
       await SecureStore.setItemAsync("user_session", token);
@@ -74,8 +80,9 @@ export function AuthProvider({ children }) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       setUser({ token, ...userData });
+      setMustChangePassword(needsPasswordChange);
 
-      return { success: true };
+      return { success: true, mustChangePassword: needsPasswordChange };
     } catch (err) {
       // Log error for debugging
       // eslint-disable-next-line no-console
@@ -88,14 +95,53 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
+  const changePassword = async (password, password_confirmation) => {
+    try {
+      const res = await axios.post(`/force-change-password`, {
+        password,
+        password_confirmation,
+      });
+
+      // Update user state and clear the password change flag
+      setUser((prev) => ({
+        ...prev,
+        ...res.data.user,
+        must_change_password: false,
+      }));
+      setMustChangePassword(false);
+
+      return { success: true, message: res.data.message };
+    } catch (err) {
+      console.error(
+        "[AuthContext] changePassword error:",
+        err?.response || err
+      );
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.errors?.password?.[0] ||
+        "Failed to change password";
+      return { success: false, message };
+    }
+  };
+
+  const logout = async () => {
     setUser(null);
-    SecureStore.deleteItemAsync("user_session");
+    setMustChangePassword(false);
+    await SecureStore.deleteItemAsync("user_session");
     delete axios.defaults.headers.common["Authorization"];
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        mustChangePassword,
+        login,
+        logout,
+        changePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
