@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { useRouter, useSegments } from "expo-router";
 import { Stack } from "expo-router";
 import { View, Text } from "react-native";
@@ -60,10 +60,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="SubjectDetail" />
-      <Stack.Screen name="SubjectAnalytics" />
-      <Stack.Screen name="Screens/about" />
-      <Stack.Screen name="Screens/profile" />
+      <Stack.Screen name="(screens)" />
     </Stack>
   );
 }

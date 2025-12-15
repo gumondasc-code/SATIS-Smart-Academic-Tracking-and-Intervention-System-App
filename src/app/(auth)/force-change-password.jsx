@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
   ImageBackground,
   Dimensions,
   KeyboardAvoidingView,
@@ -15,7 +14,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Lock, Eye, EyeClosed, Shield, CheckCircle } from "lucide-react-native";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@context/AuthContext";
+import SchoolPic from "@assets/school.jpg";
 
 const { width, height } = Dimensions.get("window");
 
@@ -84,7 +84,7 @@ const ForceChangePassword = () => {
     <View style={styles.container}>
       {/* Blurred Background Image */}
       <ImageBackground
-        source={require("../../assets/school.jpg")}
+        source={SchoolPic}
         style={styles.backgroundImage}
         blurRadius={8}
       >

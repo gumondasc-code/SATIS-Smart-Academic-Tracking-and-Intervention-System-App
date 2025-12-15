@@ -11,7 +11,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Mainmenu from "../components/mainMenu";
+import Mainmenu from "../../components/MainMenu";
 import {
   ShieldAlert,
   ShieldHalf,

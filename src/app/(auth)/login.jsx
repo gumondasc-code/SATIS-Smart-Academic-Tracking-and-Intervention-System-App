@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SchoolPicture from "@assets/school.jpg";
 import {
   View,
   Text,
@@ -15,7 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { User, Lock, Eye, EyeClosed } from "lucide-react-native";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@context/AuthContext";
+import SchoolLogo from "@assets/school-logo.png";
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,24 +35,21 @@ const Login = () => {
       setError("Please enter email and password.");
       return;
     }
-
     setError("");
     setLoading(true);
     const res = await login(email, password);
     setLoading(false);
-
     if (!res.success) {
       setError(res.message || "Please check your credentials.");
       return;
     }
-    // on success, AuthProvider will update user and the layout will redirect
   };
 
   return (
     <View style={styles.container}>
       {/* Blurred Background Image */}
       <ImageBackground
-        source={require("../../assets/school.jpg")}
+        source={SchoolPicture}
         style={styles.backgroundImage}
         blurRadius={8}
       >
@@ -72,12 +71,11 @@ const Login = () => {
               {/* School Logo */}
               <View style={styles.logoContainer}>
                 <Image
-                  source={require("../../assets/school-logo.png")}
+                  source={SchoolLogo}
                   style={styles.logo}
                   resizeMode="contain"
                 />
               </View>
-
               <Text style={styles.welcomeText}>Welcome Back</Text>
               <Text style={styles.subHeaderText}>Sign in to continue</Text>
 
