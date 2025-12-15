@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Mainmenu from "../components/mainMenu";
+import Mainmenu from "../../components/MainMenu";
 import {
   ScrollView,
   View,

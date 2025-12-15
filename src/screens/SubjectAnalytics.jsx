@@ -9,6 +9,9 @@ import {
   StyleSheet,
   Dimensions,
   Modal,
+  Alert,
+  Linking,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -33,8 +36,11 @@ import {
   BookOpen,
   Users,
   Zap,
+  Download,
 } from "lucide-react-native";
 import axios from "axios";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -48,6 +54,400 @@ export default function SubjectAnalytics() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("grades");
   const [showApproachModal, setShowApproachModal] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  // Generate HTML for PDF export
+  const generatePdfHtml = () => {
+    if (!data) return "";
+
+    const { subject, performance, attendance } = data;
+    const gradeBreakdown = performance?.gradeBreakdown || {};
+    const quarterlyGrades = performance?.quarterlyGrades || [];
+
+    // Determine grade color
+    const getGradeColorHex = (grade) => {
+      if (grade === null || grade === undefined) return "#9CA3AF";
+      if (grade >= 90) return "#10B981";
+      if (grade >= 85) return "#3B82F6";
+      if (grade >= 75) return "#F59E0B";
+      return "#EF4444";
+    };
+
+    // Determine risk level
+    const getRiskLabel = (grade) => {
+      if (grade === null || grade === undefined) return "N/A";
+      if (grade >= 80) return "On Track";
+      if (grade >= 75) return "Needs Attention";
+      if (grade >= 70) return "At Risk";
+      return "Critical";
+    };
+
+    // Build grade breakdown table rows
+    const allGrades = [
+      ...(gradeBreakdown.writtenWorks?.items || []).map((g) => ({
+        ...g,
+        type: "Written Work",
+      })),
+      ...(gradeBreakdown.performanceTask?.items || []).map((g) => ({
+        ...g,
+        type: "Performance Task",
+      })),
+      ...(gradeBreakdown.quarterlyExam?.items || []).map((g) => ({
+        ...g,
+        type: "Quarterly Exam",
+      })),
+    ];
+
+    const gradeRows = allGrades
+      .map(
+        (g) => `
+      <tr>
+        <td>${g.name || "N/A"}</td>
+        <td>${g.type}</td>
+        <td>${g.score ?? "N/A"}</td>
+        <td>${g.totalScore ?? "N/A"}</td>
+        <td style="color: ${
+          (g.percentage || 0) >= 75 ? "#10B981" : "#EF4444"
+        }; font-weight: 600;">
+          ${
+            g.percentage !== null && g.percentage !== undefined
+              ? `${g.percentage}%`
+              : "N/A"
+          }
+        </td>
+      </tr>
+    `
+      )
+      .join("");
+
+    // Build quarterly grades
+    const quarterRows = quarterlyGrades
+      .map(
+        (q) => `
+      <div style="flex: 1; text-align: center; padding: 10px; background: #f9fafb; border-radius: 8px; margin: 0 5px;">
+        <div style="font-size: 10px; color: #6B7280; margin-bottom: 5px;">QUARTER ${
+          q.quarter
+        }</div>
+        <div style="font-size: 24px; font-weight: 700; color: ${getGradeColorHex(
+          q.grade
+        )};">
+          ${q.grade ?? "--"}
+        </div>
+        <div style="font-size: 9px; color: #9CA3AF; margin-top: 3px;">
+          ${q.assignmentCount || 0} assignments
+        </div>
+      </div>
+    `
+      )
+      .join("");
+
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student Analytics Report</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            font-size: 11px; 
+            line-height: 1.4; 
+            color: #1f2937;
+            padding: 20px;
+          }
+          .header { 
+            text-align: center; 
+            border-bottom: 3px solid #DB2777; 
+            padding-bottom: 15px; 
+            margin-bottom: 20px; 
+          }
+          .logo { font-size: 28px; font-weight: 800; color: #DB2777; letter-spacing: -1px; }
+          .title { font-size: 18px; color: #DB2777; margin: 5px 0; }
+          .subtitle { font-size: 11px; color: #6b7280; }
+          
+          .student-info {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #DB2777;
+          }
+          .student-name { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+          .info-row { display: flex; margin: 3px 0; }
+          .info-label { color: #6b7280; width: 80px; font-size: 10px; }
+          .info-value { color: #1f2937; font-weight: 600; font-size: 11px; }
+          
+          .subject-header {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .subject-name { font-size: 15px; font-weight: 700; color: #1f2937; }
+          .subject-teacher { font-size: 11px; color: #6b7280; margin-top: 4px; }
+          .grade-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+            background: ${getGradeColorHex(performance?.overallGrade)};
+          }
+          
+          .section { margin-bottom: 20px; }
+          .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #DB2777;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #fce7f3;
+          }
+          
+          .stats-grid { display: flex; gap: 10px; margin-bottom: 15px; }
+          .stat-card {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+          }
+          .stat-value { font-size: 20px; font-weight: 700; color: #1f2937; }
+          .stat-label { font-size: 9px; color: #6b7280; text-transform: uppercase; margin-top: 2px; }
+          
+          .quarters-row { display: flex; margin-bottom: 15px; }
+          
+          table { width: 100%; border-collapse: collapse; font-size: 10px; }
+          th { 
+            background: #f3f4f6; 
+            color: #374151; 
+            font-weight: 600; 
+            padding: 8px 10px; 
+            text-align: left; 
+            border-bottom: 2px solid #e5e7eb; 
+          }
+          td { padding: 6px 10px; border-bottom: 1px solid #f3f4f6; color: #4b5563; }
+          tr:nth-child(even) { background: #fafafa; }
+          
+          .attendance-grid { display: flex; gap: 10px; }
+          .attendance-item { flex: 1; text-align: center; padding: 10px; }
+          .attendance-value { font-size: 18px; font-weight: 700; }
+          .attendance-label { font-size: 9px; color: #6b7280; }
+          .present { color: #10B981; }
+          .absent { color: #EF4444; }
+          .late { color: #F59E0B; }
+          .excused { color: #3B82F6; }
+          
+          .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 600;
+          }
+          .risk-on-track { background: #d1fae5; color: #065f46; }
+          .risk-needs-attention { background: #fef3c7; color: #92400e; }
+          .risk-at-risk { background: #fee2e2; color: #991b1b; }
+          .risk-critical { background: #fecaca; color: #7f1d1d; }
+          
+          .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #f3f4f6;
+            text-align: center;
+            font-size: 9px;
+            color: #9ca3af;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">SATIS</div>
+          <div class="title">Student Analytics Report</div>
+          <div class="subtitle">Smart Academic Tracking and Intervention System</div>
+        </div>
+        
+        <div class="subject-header">
+          <div>
+            <div class="subject-name">${subject?.name || "Subject"}</div>
+            <div class="subject-teacher">
+              ${subject?.teacher || "N/A"} • ${subject?.section || ""} • ${
+      subject?.schoolYear || ""
+    }
+            </div>
+          </div>
+          <div class="grade-circle">${performance?.overallGrade ?? "--"}</div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">📊 Performance Overview</div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">${
+                performance?.overallGrade ?? "--"
+              }%</div>
+              <div class="stat-label">Overall Grade</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${attendance?.rate ?? "--"}%</div>
+              <div class="stat-label">Attendance Rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${allGrades.length}</div>
+              <div class="stat-label">Total Grades</div>
+            </div>
+            <div class="stat-card">
+              <span class="risk-badge ${
+                getRiskLabel(performance?.overallGrade) === "On Track"
+                  ? "risk-on-track"
+                  : getRiskLabel(performance?.overallGrade) ===
+                    "Needs Attention"
+                  ? "risk-needs-attention"
+                  : getRiskLabel(performance?.overallGrade) === "At Risk"
+                  ? "risk-at-risk"
+                  : "risk-critical"
+              }">${getRiskLabel(performance?.overallGrade)}</span>
+              <div class="stat-label" style="margin-top: 5px;">Status</div>
+            </div>
+          </div>
+        </div>
+        
+        ${
+          quarterlyGrades.length > 0
+            ? `
+        <div class="section">
+          <div class="section-title">📅 Quarterly Performance</div>
+          <div class="quarters-row">${quarterRows}</div>
+        </div>
+        `
+            : ""
+        }
+        
+        <div class="section">
+          <div class="section-title">✅ Attendance Summary</div>
+          <div class="attendance-grid">
+            <div class="attendance-item">
+              <div class="attendance-value">${attendance?.totalDays ?? 0}</div>
+              <div class="attendance-label">Total Days</div>
+            </div>
+            <div class="attendance-item">
+              <div class="attendance-value present">${
+                attendance?.presentDays ?? 0
+              }</div>
+              <div class="attendance-label">Present</div>
+            </div>
+            <div class="attendance-item">
+              <div class="attendance-value absent">${
+                attendance?.absentDays ?? 0
+              }</div>
+              <div class="attendance-label">Absent</div>
+            </div>
+            <div class="attendance-item">
+              <div class="attendance-value late">${
+                attendance?.lateDays ?? 0
+              }</div>
+              <div class="attendance-label">Late</div>
+            </div>
+            <div class="attendance-item">
+              <div class="attendance-value excused">${
+                attendance?.excusedDays ?? 0
+              }</div>
+              <div class="attendance-label">Excused</div>
+            </div>
+          </div>
+        </div>
+        
+        ${
+          allGrades.length > 0
+            ? `
+        <div class="section">
+          <div class="section-title">📝 Grade Breakdown</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Assignment</th>
+                <th>Type</th>
+                <th>Score</th>
+                <th>Total</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${gradeRows}
+            </tbody>
+          </table>
+        </div>
+        `
+            : ""
+        }
+        
+        <div class="footer">
+          <p>Generated on ${new Date().toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}</p>
+          <p>SATIS - Smart Academic Tracking and Intervention System</p>
+          <p>This report was automatically generated from SATIS Mobile App</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
+  // Export PDF handler
+  const handleExportPdf = async () => {
+    if (!data) {
+      Alert.alert("Error", "No data available to export");
+      return;
+    }
+
+    try {
+      setExporting(true);
+
+      // Generate HTML content
+      const htmlContent = generatePdfHtml();
+
+      // Create PDF from HTML
+      const { uri } = await Print.printToFileAsync({
+        html: htmlContent,
+        base64: false,
+      });
+
+      // Check if sharing is available
+      const isAvailable = await Sharing.isAvailableAsync();
+
+      if (isAvailable) {
+        await Sharing.shareAsync(uri, {
+          mimeType: "application/pdf",
+          dialogTitle: "Share Analytics Report",
+          UTI: "com.adobe.pdf",
+        });
+      } else {
+        Alert.alert("Success", "PDF generated successfully!", [{ text: "OK" }]);
+      }
+    } catch (err) {
+      console.error("Export error:", err);
+      Alert.alert(
+        "Export Failed",
+        err?.message || "Could not export PDF. Please try again.",
+        [{ text: "OK" }]
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
 
   // ============================================
   // DYNAMIC INSIGHTS COMPUTATION
@@ -892,9 +1292,19 @@ export default function SubjectAnalytics() {
 
       {/* Grade Badge - Top Right Style */}
       <View style={styles.gradeHeaderRow}>
-        <TouchableOpacity style={styles.exportBtn}>
-          <FileDown color="#DB2777" size={16} />
-          <Text style={styles.exportText}>Export PDF</Text>
+        <TouchableOpacity
+          style={[styles.exportBtn, exporting && styles.exportBtnDisabled]}
+          onPress={handleExportPdf}
+          disabled={exporting}
+        >
+          {exporting ? (
+            <ActivityIndicator size="small" color="#DB2777" />
+          ) : (
+            <FileDown color="#DB2777" size={16} />
+          )}
+          <Text style={styles.exportText}>
+            {exporting ? "Exporting..." : "Export PDF"}
+          </Text>
         </TouchableOpacity>
         <View style={styles.gradeBox}>
           <Text style={styles.gradeBoxLabel}>CURRENT GRADE</Text>
@@ -2084,6 +2494,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#DB2777",
+  },
+  exportBtnDisabled: {
+    opacity: 0.6,
+    backgroundColor: "#FDF2F8",
   },
   exportText: { color: "#DB2777", fontSize: 12, fontWeight: "600" },
   gradeBox: { alignItems: "flex-end" },

@@ -75,13 +75,13 @@ function Mainmenu() {
     {
       label: "Profile",
       icon: User,
-      route: "/Screens/profile",
+      route: "/profile",
       color: "#6B7280",
     },
     {
       label: "About SATIS",
       icon: Info,
-      route: "/Screens/about",
+      route: "/about",
       color: "#6B7280",
     },
   ];
@@ -199,7 +199,7 @@ function Mainmenu() {
         <View style={styles.rightSection}>
           <TouchableOpacity
             style={styles.profileSection}
-            onPress={() => router.push("/Screens/profile")}
+            onPress={() => router.push("/profile")}
             activeOpacity={0.7}
           >
             {/* Avatar with Initials */}

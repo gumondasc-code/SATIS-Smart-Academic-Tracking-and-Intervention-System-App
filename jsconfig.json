@@ -2,7 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@styles/*": ["styles/*"]
+      "@styles/*": ["styles/*"],
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"],
+      "@context/*": ["src/context/*"],
+      "@screens/*": ["src/screens/*"],
+      "@assets/*": ["assets/*"]
     }
   },
   "exclude": ["node_modules", "babel.config.js"]

@@ -30,101 +30,100 @@ import {
 } from "lucide-react-native";
 
 // Tutorial Components
-import TutorialCard from "../components/TutorialCard";
-import TutorialOverlay from "../components/TutorialOverlay";
-import { getTutorialCards, getTutorialById } from "../components/tutorialData";
+import TutorialCard from "@components/TutorialCard";
+import TutorialOverlay from "@components/TutorialOverlay";
+import { getTutorialCards, getTutorialById } from "@components/tutorialData";
 
 // FAQ Accordion Item Component
-const FAQItem = ({
-  question,
-  answer,
-  icon: Icon,
-  iconColor,
-  isOpen,
-  onPress,
-}) => (
-  <TouchableOpacity
-    style={[styles.faqCard, isOpen && styles.faqCardOpen]}
-    onPress={onPress}
-    activeOpacity={0.7}
-  >
-    <View style={styles.faqHeader}>
-      <View
-        style={[
-          styles.faqIconBox,
-          { backgroundColor: isOpen ? "#EEF2FF" : "#F3F4F6" },
-        ]}
-      >
-        <Icon color={isOpen ? "#6366F1" : "#6B7280"} size={18} />
+const FAQItem = (props) => {
+  const { question, answer, icon: Icon, iconColor, isOpen, onPress } = props;
+  return (
+    <TouchableOpacity
+      style={[styles.faqCard, isOpen && styles.faqCardOpen]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={styles.faqHeader}>
+        <View
+          style={[
+            styles.faqIconBox,
+            { backgroundColor: isOpen ? "#EEF2FF" : "#F3F4F6" },
+          ]}
+        >
+          <Icon color={isOpen ? "#6366F1" : "#6B7280"} size={18} />
+        </View>
+        <Text style={styles.faqQuestion}>{question}</Text>
+        {isOpen ? (
+          <ChevronUp color="#6B7280" size={20} />
+        ) : (
+          <ChevronDown color="#6B7280" size={20} />
+        )}
       </View>
-      <Text style={styles.faqQuestion}>{question}</Text>
-      {isOpen ? (
-        <ChevronUp color="#6B7280" size={20} />
-      ) : (
-        <ChevronDown color="#6B7280" size={20} />
+      {isOpen && (
+        <View style={styles.faqAnswer}>
+          <Text style={styles.faqAnswerText}>{answer}</Text>
+        </View>
       )}
-    </View>
-    {isOpen && (
-      <View style={styles.faqAnswer}>
-        <Text style={styles.faqAnswerText}>{answer}</Text>
-      </View>
-    )}
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 // Feature Card Component
-const FeatureCard = ({
-  title,
-  description,
-  icon: Icon,
-  gradientColors,
-  onPress,
-}) => (
-  <TouchableOpacity
-    style={[styles.featureCard, { backgroundColor: gradientColors[0] }]}
-    onPress={onPress}
-    activeOpacity={0.8}
-  >
-    <View style={styles.featureIconBox}>
-      <Icon color="#FFF" size={24} />
-    </View>
-    <Text style={styles.featureTitle}>{title}</Text>
-    <Text style={styles.featureDescription}>{description}</Text>
-    {onPress && (
-      <View style={styles.featureArrow}>
-        <Text style={styles.featureArrowText}>View →</Text>
+const FeatureCard = (props) => {
+  const { title, description, icon: Icon, gradientColors, onPress } = props;
+  return (
+    <TouchableOpacity
+      style={[styles.featureCard, { backgroundColor: gradientColors[0] }]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <View style={styles.featureIconBox}>
+        <Icon color="#FFF" size={24} />
       </View>
-    )}
-  </TouchableOpacity>
-);
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureDescription}>{description}</Text>
+      {onPress && (
+        <View style={styles.featureArrow}>
+          <Text style={styles.featureArrowText}>View →</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 // Study Tip Card Component
-const TipCard = ({ number, title, description, bgColor }) => (
-  <View style={[styles.tipCard, { backgroundColor: bgColor }]}>
-    <View style={styles.tipBadge}>
-      <Text style={styles.tipBadgeText}>Tip #{number}</Text>
+const TipCard = (props) => {
+  const { number, title, description, bgColor } = props;
+  return (
+    <View style={[styles.tipCard, { backgroundColor: bgColor }]}>
+      <View style={styles.tipBadge}>
+        <Text style={styles.tipBadgeText}>Tip #{number}</Text>
+      </View>
+      <Text style={styles.tipTitle}>{title}</Text>
+      <Text style={styles.tipDescription}>{description}</Text>
     </View>
-    <Text style={styles.tipTitle}>{title}</Text>
-    <Text style={styles.tipDescription}>{description}</Text>
-  </View>
-);
+  );
+};
 
 // Contact Card Component
-const ContactCard = ({ icon: Icon, title, subtitle, bgColor, onPress }) => (
-  <TouchableOpacity
-    style={styles.contactCard}
-    onPress={onPress}
-    activeOpacity={0.7}
-  >
-    <View style={[styles.contactIconBox, { backgroundColor: bgColor }]}>
-      <Icon color="#FFF" size={22} />
-    </View>
-    <Text style={styles.contactTitle}>{title}</Text>
-    <Text style={styles.contactSubtitle}>{subtitle}</Text>
-  </TouchableOpacity>
-);
+const ContactCard = (props) => {
+  const { icon: Icon, title, subtitle, bgColor, onPress } = props;
+  return (
+    <TouchableOpacity
+      style={styles.contactCard}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.contactIconBox, { backgroundColor: bgColor }]}>
+        <Icon color="#FFF" size={22} />
+      </View>
+      <Text style={styles.contactTitle}>{title}</Text>
+      <Text style={styles.contactSubtitle}>{subtitle}</Text>
+    </TouchableOpacity>
+  );
+};
 
-const LearnMoreScreen = () => {
+const About = () => {
   const router = useRouter();
   const [openFAQ, setOpenFAQ] = useState(0);
   const [activeTutorial, setActiveTutorial] = useState(null);
@@ -546,7 +545,7 @@ const LearnMoreScreen = () => {
   );
 };
 
-export default LearnMoreScreen;
+export default About;
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#FFF7FB" },

@@ -19,15 +19,15 @@ import {
   TrendingUp,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
-import Mainmenu from "../components/mainMenu";
+import Mainmenu from "../../components/MainMenu";
 import styles from "@styles/home";
 import axios from "axios";
-import SubjectCard from "../components/SubjectCard";
-import NotificationItem from "../components/NotificationItem";
-import MiniChart from "../components/MiniChart";
-import QuickActionCard from "../components/QuickActionCard";
-import SemesterToggle from "../components/SemesterToggle";
-
+import SubjectCard from "../../components/SubjectCard";
+import NotificationItem from "../../components/NotificationItem";
+import MiniChart from "../../components/MiniChart";
+import QuickActionCard from "../../components/QuickActionCard";
+import SemesterToggle from "../../components/SemesterToggle";
+import SchoolPic from "@assets/school.jpg";
 // Helper function for time-based greeting
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -161,7 +161,7 @@ export default function Home() {
       >
         {/* Welcome Section */}
         <ImageBackground
-          source={require("../../assets/school.jpg")}
+          source={SchoolPic}
           style={styles.welcomeCard}
           imageStyle={styles.welcomeCardImage}
         >

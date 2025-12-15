@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import Mainmenu from "../components/mainMenu";
-import SemesterToggle from "../components/SemesterToggle";
+import Mainmenu from "../../components/MainMenu";
+import SemesterToggle from "../../components/SemesterToggle";
 import {
   BarChart,
   Target,
