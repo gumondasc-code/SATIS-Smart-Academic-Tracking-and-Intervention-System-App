@@ -1,4 +1,5 @@
 import AboutScreen from "@screens/about/index.jsx";
+
 import {
   BookOpen,
   BarChart2,
