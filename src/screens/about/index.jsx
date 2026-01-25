@@ -33,10 +33,33 @@ import FAQItem from "./FAQItem";
 import TipCard from "./TipCard";
 import ContactCard from "./ContactCard";
 
+import uuid from "react-native-uuid";
+
 // Tutorial Components
 import TutorialCard from "@components/TutorialCard";
 import TutorialOverlay from "@components/TutorialOverlay";
 import { getTutorialCards, getTutorialById } from "@components/tutorialData";
+
+const Contacts = [
+  {
+    id: uuid.v4(),
+    icon: Mail,
+    title: "Email Support",
+    subtitle: "support@satis.edu",
+  },
+  {
+    id: uuid.v4(),
+    icon: Phone,
+    title: "Phone Support",
+    subtitle: "123-456-7890",
+  },
+  {
+    id: uuid.v4(),
+    icon: MessageCircle,
+    title: "Send Message",
+    subtitle: "Chat with our support team",
+  },
+];
 
 const About = (props) => {
   const { faqs, features, studyTips } = props;
@@ -306,27 +329,24 @@ const About = (props) => {
           </View>
 
           <View style={styles.contactGrid}>
-            <ContactCard
-              icon={Mail}
-              title="Email Support"
-              subtitle="support@satis.edu"
-              bgColor="#F59E0B"
-              onPress={handleOpenEmail}
-            />
-            <ContactCard
-              icon={Phone}
-              title="Call Us"
-              subtitle="(123) 456-789"
-              bgColor="#10B981"
-              onPress={handleOpenPhone}
-            />
-            <ContactCard
-              icon={MessageCircle}
-              title="Send Message"
-              subtitle="Contact Admin"
-              bgColor="#8B5CF6"
-              onPress={() => {}}
-            />
+            {Contacts.map((contact, index) => (
+              <ContactCard
+                key={contact.id}
+                icon={contact.icon}
+                title={contact.title}
+                subtitle={contact.subtitle}
+                bgColor={
+                  index === 0 ? "#F59E0B" : index === 1 ? "#10B981" : "#8B5CF6"
+                }
+                onPress={
+                  index === 0
+                    ? handleOpenEmail
+                    : index === 1
+                    ? handleOpenPhone
+                    : () => {}
+                }
+              />
+            ))}
           </View>
         </View>
 
